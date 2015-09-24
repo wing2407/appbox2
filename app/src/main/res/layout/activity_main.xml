@@ -1,0 +1,98 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_activity_main"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="265dp"
+        android:descendantFocusability="blocksDescendants" >
+
+        <!--<android.support.v4.view.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="265dp"
+            android:layout_gravity="center" />-->
+
+        <GridView
+            android:id="@+id/gridView_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:numColumns="4"/>
+
+       <!-- <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:orientation="horizontal" >
+        </RadioGroup>-->
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/ad_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+    <View
+        android:id="@+id/blank"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/white" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center|left"
+            android:paddingLeft="10dp"
+            android:text="小编精选"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/nextAppBtn"
+            android:layout_width="60dp"
+            android:layout_height="20dp"
+            android:gravity="center"
+            android:background="@drawable/bg_activity_main_btn"
+            android:layout_marginRight="5dp"
+            android:text="换一批"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp" >
+
+        <GridView
+            android:id="@+id/addMoreGridView"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_gravity="top"
+            android:fadeScrollbars="true"
+            android:gravity="center|top"
+            android:numColumns="4" >
+        </GridView>
+
+        <TextView
+            android:id="@+id/noAppTitle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="恭喜！您的应用已包罗万象！"
+            android:textColor="@android:color/black"
+            android:textSize="20sp" />
+    </FrameLayout>
+    </LinearLayout>
+</LinearLayout>
