@@ -16,9 +16,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private GridView gridView;
 
-    //private ImageAdapter adapter;
     ViewPagerAdapter mAdapter;
     ViewPager mPager;
     List<String> data = new ArrayList<String>();
@@ -29,14 +27,14 @@ public class MainActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
-        LinearLayout ad_main = (LinearLayout) findViewById(R.id.ad_main);
-        ad_main.setVisibility(View.GONE);
+        /*LinearLayout ad_main = (LinearLayout) findViewById(R.id.ad_main);
+        ad_main.setVisibility(View.GONE);*/
 
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.container);
-        LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams) relativeLayout.getLayoutParams();
+      /*  LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams) relativeLayout.getLayoutParams();
         // 取控件aaa当前的布局参数
         linearParams.height = dip2px(this, 395); // 当控件的高强制设成适配父窗口
-        relativeLayout.setLayoutParams(linearParams); // 使设置好的布局参数应用到控件relatucelayout
+        relativeLayout.setLayoutParams(linearParams); // 使设置好的布局参数应用到控件relatucelayout*/
 
         LinearLayout group = (LinearLayout) findViewById(R.id.viewGroup);
         mPager = (ViewPager) findViewById(R.id.viewpager);
