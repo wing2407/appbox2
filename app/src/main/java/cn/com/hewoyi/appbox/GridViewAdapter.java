@@ -42,7 +42,7 @@ public class GridViewAdapter extends BaseAdapter {
 
         if (convertView == null) {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.gridview_item,null);
-            textView = (TextView)convertView.findViewById(R.id.tv);
+            textView = (TextView)convertView.findViewById(R.id.appName_grid_item);
             convertView.setTag(textView);
 
             // if it's not recycled, initialize some attributes

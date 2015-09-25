@@ -1,14 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/frage_item"
+    android:id="@+id/griditem"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-<TextView
-    android:id="@+id/tv"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" />
+    <FrameLayout
+        android:layout_width="70dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/iv_grid_item"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="fitXY"
+            android:background="@drawable/bg_griditem"
+            android:src="@mipmap/ic_launcher" />
+
+
+<!--        <ImageView
+            android:id="@+id/downBGImg"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_griditem" />-->
+
+        <ProgressBar
+            android:id="@+id/pb_grid_item"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/pb_text_grid_item"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:textColor="@android:color/holo_blue_light"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/appName_grid_item"
+            android:layout_width="70dp"
+            android:layout_height="15dp"
+            android:layout_gravity="bottom|center"
+            android:layout_marginTop="60dp"
+            android:ellipsize="end"
+            android:gravity="center|bottom"
+            android:selectAllOnFocus="false"
+            android:singleLine="true"
+            android:text="hello"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/delete_grid_item"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@android:drawable/ic_delete"
+            android:focusable="false" />
+    </FrameLayout>
 
 
 </LinearLayout>

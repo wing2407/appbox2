@@ -57,8 +57,8 @@ public class ViewPagerFragment extends Fragment implements AdapterView.OnItemCli
         gridView.setOnItemLongClickListener(this);//长按事件
 
 
-        TextView tv = (TextView)v.findViewById(R.id.text);
-        tv.setText("Fragment #" + mNum);
+       /* TextView tv = (TextView)v.findViewById(R.id.text);
+        tv.setText("Fragment #" + mNum);*/
         return v;
     }
 

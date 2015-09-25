@@ -16,6 +16,7 @@ class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     //生成的fragment个数
     static int NUM_ITEMS;
+    static int GRID_ITEM_COUNT = 12;
 
     Context mContext;
     LinearLayout group;//导航圆点布局
@@ -30,7 +31,7 @@ class ViewPagerAdapter extends FragmentStatePagerAdapter {
         this.group = group;
         this.mViewPager = viewPager;
         this.data = list;
-        NUM_ITEMS = list.size() / 12 + 1;//一个fragment一个gridview，一个gridview有12个图标
+        NUM_ITEMS = list.size() / GRID_ITEM_COUNT + 1;//一个fragment一个gridview，一个gridview有12个图标
         initCirclePoint();
         mViewPager.setOnPageChangeListener(new AdPageChangeListener());//滑动监听
 
@@ -44,7 +45,8 @@ class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         //new新的Fragment
-        return new ViewPagerFragment(position, data.subList(position * 12, position * 12 + 12 > data.size() ? data.size() : position * 12 + 12));
+        return new ViewPagerFragment(position, data.subList(position * GRID_ITEM_COUNT,
+                        position * GRID_ITEM_COUNT + GRID_ITEM_COUNT > data.size() ? data.size() : position * GRID_ITEM_COUNT + GRID_ITEM_COUNT));
 
     }
 
