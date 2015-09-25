@@ -1,39 +1,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bg_activity_main"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="265dp"
-        android:descendantFocusability="blocksDescendants" >
+        android:descendantFocusability="blocksDescendants"
+        >
 
-        <!--<android.support.v4.view.ViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="265dp"
-            android:layout_gravity="center" />-->
+        <LinearLayout
+            android:id="@+id/viewGroup"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            >
+        </LinearLayout>
 
-        <GridView
-            android:id="@+id/gridView_main"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:numColumns="4"/>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            >
+        </android.support.v4.view.ViewPager>
 
-       <!-- <RadioGroup
-            android:id="@+id/radioGroup"
-            android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:layout_gravity="bottom|right"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="10dp"
-            android:gravity="center"
-            android:orientation="horizontal" >
-        </RadioGroup>-->
-    </FrameLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/ad_main"
