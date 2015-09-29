@@ -51,14 +51,13 @@ public class DBHandler {
     public void saveList(List<AppInfo> appInfos) {
         //不为空时操作，前面有!号
         if (!appInfos.isEmpty()) {
-            Cursor cursor = db.rawQuery("select packagename from installed", null);
+            Cursor cursor = db.rawQuery("select * from installed", null);
             //查询到有数据，则去掉之前已安装的,获得新list
             if (cursor.moveToFirst()) {
                 do {
-                    for (int i = 0; i < appInfos.size(); i++) {
-                        AppInfo app = appInfos.get(i);
-                        if (cursor.getString(cursor.getColumnIndex("packagename")).equals(app.getPackageName())) {
-                            appInfos.remove(app);
+                    for (AppInfo info : appInfos) {
+                        if (cursor.getString(cursor.getColumnIndex("packagename")).equals(info.getPackageName())) {
+                            appInfos.remove(info);
                         }
                     }
                 }
@@ -68,10 +67,10 @@ public class DBHandler {
 
 
             //得到处理过的list则插入数据表
-           db.beginTransaction();//开启事务操作
+            db.beginTransaction();//开启事务操作
             ContentValues values = new ContentValues();
             for (AppInfo info : appInfos) {
-                values.put("_id", info.get_id());
+                values.put("app_id", info.get_id());
                 values.put("name", info.getName());
                 values.put("packagename", info.getPackageName());
                 values.put("icon", info.getApp_icon());
@@ -80,9 +79,10 @@ public class DBHandler {
                 values.clear();
                 //Log.i("DBHandler", info.get_id());
             }
-           db.setTransactionSuccessful();//事务成功
-           db.endTransaction();
+            db.setTransactionSuccessful();//事务成功
+            db.endTransaction();
         }
+
     }
 
     /**
@@ -92,23 +92,31 @@ public class DBHandler {
      */
     public List<AppInfo> loadList() {
         List<AppInfo> list = new ArrayList<AppInfo>();
-        Cursor cursor = db.rawQuery("select distinct * from " + tableName, null);
-        if (cursor.moveToFirst()) {
-            do {
-                AppInfo appInfo = new AppInfo();
-                appInfo.set_id(cursor.getString(cursor.getColumnIndex("_id")));
-                appInfo.setName(cursor.getString(cursor.getColumnIndex("name")));
-                appInfo.setPackageName(cursor.getString(cursor.getColumnIndex("packagename")));
-                appInfo.setApp_icon(cursor.getBlob(cursor.getColumnIndex("icon")));
-                list.add(appInfo);
-            } while (cursor.moveToNext());
+        try {
+            Cursor cursor = db.rawQuery("select distinct * from " + tableName, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    AppInfo appInfo = new AppInfo();
+                    appInfo.set_id(cursor.getString(cursor.getColumnIndex("app_id")));
+                    appInfo.setName(cursor.getString(cursor.getColumnIndex("name")));
+                    appInfo.setPackageName(cursor.getString(cursor.getColumnIndex("packagename")));
+                    appInfo.setApp_icon(cursor.getBlob(cursor.getColumnIndex("icon")));
+                    list.add(appInfo);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            db.close();
+        } catch (Exception e) {
+            Log.e("DBHandler", e.toString());
+        } finally {
+            return list;
         }
-        cursor.close();
-        return list;
+
     }
 
     /**
      * 保存已安装的packageName
+     *
      * @param packageName
      */
     public void saveInstall(String packageName) {
@@ -120,5 +128,8 @@ public class DBHandler {
         db.delete(tableName, "packagename = ?", new String[]{packageName});
     }
 
+    public void closeDB() {
+        db.close();
+    }
 
 }
