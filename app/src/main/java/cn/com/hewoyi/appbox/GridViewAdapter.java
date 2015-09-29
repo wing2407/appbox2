@@ -6,6 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
@@ -38,28 +41,42 @@ public class GridViewAdapter extends BaseAdapter {
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         //ImageView imageView;
-        TextView textView;
-
+        ViewHolder viewHolder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.gridview_item,null);
-            textView = (TextView)convertView.findViewById(R.id.appName_grid_item);
-            convertView.setTag(textView);
 
-            // if it's not recycled, initialize some attributes
-           /* imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(8, 8, 8, 8);*/
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.gridview_item,null);
+            viewHolder  = new ViewHolder();
+            viewHolder.appName_grid_item = (TextView)convertView.findViewById(R.id.appName_grid_item);
+            viewHolder.delete_grid_item = (Button)convertView.findViewById(R.id.delete_grid_item);
+            viewHolder.pb_text_grid_item = (TextView)convertView.findViewById(R.id.pb_text_grid_item);
+            viewHolder.pb_grid_item= (ProgressBar)convertView.findViewById(R.id.pb_grid_item);
+            viewHolder.iv_grid_item =(ImageView)convertView.findViewById(R.id.iv_grid_item);
+
+            viewHolder.pb_grid_item.setVisibility(View.GONE);
+            viewHolder.pb_text_grid_item.setVisibility(View.GONE);
+            viewHolder.delete_grid_item.setVisibility(View.GONE);
+
+            convertView.setTag(viewHolder);
+
         } else {
-            textView = (TextView)convertView.getTag();
+            viewHolder = (ViewHolder)convertView.getTag();
 
             //imageView = (ImageView) convertView;
         }
 
-        textView.setText(mData.get(position)+"");
+        viewHolder.appName_grid_item.setText(mData.get(position)+"");
         return convertView;
        /* imageView.setImageResource(mThumbIds[position]);
         return imageView;*/
+
+    }
+
+    class ViewHolder{
+        ImageView iv_grid_item;
+        ProgressBar pb_grid_item;
+        TextView pb_text_grid_item;
+        TextView appName_grid_item;
+        Button delete_grid_item;
 
     }
 
