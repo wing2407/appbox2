@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,18 +64,21 @@ public class DBHandler {
                 }
                 while (cursor.moveToNext());
             }
+            cursor.close();
+
 
             //得到处理过的list则插入数据表
            db.beginTransaction();//开启事务操作
             ContentValues values = new ContentValues();
             for (AppInfo info : appInfos) {
-
                 values.put("_id", info.get_id());
                 values.put("name", info.getName());
                 values.put("packagename", info.getPackageName());
                 values.put("icon", info.getApp_icon());
                 db.insert(tableName, null, values);
+                //循环使用values
                 values.clear();
+                //Log.i("DBHandler", info.get_id());
             }
            db.setTransactionSuccessful();//事务成功
            db.endTransaction();

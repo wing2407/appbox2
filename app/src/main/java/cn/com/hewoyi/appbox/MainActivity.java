@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 List<AppInfo> appList = new ArrayList<AppInfo>();
-                AppInfo appInfo = new AppInfo();
+
 
                 String url = "http://192.168.1.10/test.json";
                 OkHttpClient client = new OkHttpClient();
@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.i("MainActivity", "info_json-->id:" + info_data.getString("_id") + ",   name:" + info_data.getString("name") + ",   pack:" + info_data.getString("packagename"));
 
                             //获取泛型appinfo的各项信息
+                            AppInfo appInfo = new AppInfo();
                             appInfo.set_id(info_data.getString("_id"));
                             appInfo.setName(info_data.getString("name"));
                             appInfo.setPackageName(info_data.getString("packagename"));
@@ -111,11 +112,10 @@ public class MainActivity extends AppCompatActivity {
                             Log.i("MainActivity", "app_icon-->length:" + appInfo.getApp_icon().length + "");
                             //加入list
                             appList.add(appInfo);
-
-                            //解析得到list存入数据库
-                            DBHandler dbHandler = DBHandler.getInstance(getBaseContext(),day);
-                            dbHandler.saveList(appList);
                         }
+                        //解析得到list存入数据库
+                        DBHandler dbHandler = DBHandler.getInstance(getBaseContext(), day);
+                        dbHandler.saveList(appList);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
