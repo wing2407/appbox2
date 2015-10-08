@@ -2,6 +2,7 @@ package cn.com.hewoyi.appbox;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -17,72 +18,102 @@ public class DBHandler {
      */
     public static final String DB_NAME = "apps";
     /**
-     * 数据库版本作为表名
+     * 数据库版本
      */
-    private String tableName;
+    public static final int VERSION = 1;
     private static DBHandler DBHandler;
     private SQLiteDatabase db;
+
+    private Context mContext;
+    private SharedPreferences shpre;
 
     /**
      * 将构造方法私有化
      */
-    private DBHandler(Context context, int ver) {
-        tableName = "list_" + ver;
+    private DBHandler(Context context) {
+        mContext = context;
+        shpre = context.getSharedPreferences("dbTable", context.MODE_PRIVATE);
+
         DBHelper dbHelper = new DBHelper(context,
-                DB_NAME, null, ver);
+                DB_NAME, null, VERSION);
         db = dbHelper.getWritableDatabase();
     }
 
     /**
      * 获取DB的实例。
      */
-    public synchronized static DBHandler getInstance(Context context, int ver) {
+    public synchronized static DBHandler getInstance(Context context) {
         if (DBHandler == null) {
-            DBHandler = new DBHandler(context, ver);
+            DBHandler = new DBHandler(context);
         }
         return DBHandler;
     }
+
+    //接口有新数据时候增加的表
+    private String createTable(String tableName) {
+        return "create table if not exists " + tableName + "(" +
+                "id integer primary key autoincrement, " +
+                "app_id text, " +
+                "name text, " +
+                "packagename text, " +
+                "icon blob)";
+    }
+
 
     /**
      * 数据库保存list
      *
      * @param appInfos
      */
-    public void saveList(List<AppInfo> appInfos) {
+    public synchronized void saveList(List<AppInfo> appInfos) {
+        //String newTable = shpre.getString("newVer", "");
+
+
         //不为空时操作，前面有!号
         if (!appInfos.isEmpty()) {
-            Cursor cursor = db.rawQuery("select * from installed", null);
-            //查询到有数据，则去掉之前已安装的,获得新list
-            if (cursor.moveToFirst()) {
-                do {
-                    for (AppInfo info : appInfos) {
-                        if (cursor.getString(cursor.getColumnIndex("packagename")).equals(info.getPackageName())) {
-                            appInfos.remove(info);
+            String newTable = shpre.getString("newVer", "");
+            String oldTable = shpre.getString("oldVer", "old");
+
+            //表名不同的时候插入数据,前面有！号
+            if (!newTable.equals(oldTable)) {
+                db.beginTransaction();//开启事务操作
+
+                //过滤已安装的packageName
+                Cursor cs_install = db.rawQuery("select * from installed", null);
+                //查询到有数据，则去掉之前已安装的,获得新list
+                if (cs_install.moveToFirst()) {
+                    do {
+                        for (AppInfo info : appInfos) {
+                            if (cs_install.getString(cs_install.getColumnIndex("packagename")).equals(info.getPackageName())) {
+                                appInfos.remove(info);
+                            }
                         }
                     }
+                    while (cs_install.moveToNext());
                 }
-                while (cursor.moveToNext());
-            }
-            cursor.close();
+                cs_install.close();
 
+                //创建新表
+                db.execSQL(createTable(newTable));
+                //得到处理过的list则插入数据表
+                ContentValues values = new ContentValues();
+                for (AppInfo info : appInfos) {
+                    values.put("app_id", info.get_id());
+                    values.put("name", info.getName());
+                    values.put("packagename", info.getPackageName());
+                    values.put("icon", info.getApp_icon());
+                    db.insert(newTable, null, values);
+                    //循环使用values
+                    values.clear();
+                    //Log.i("DBHandler", info.get_id());
+                }
 
-            //得到处理过的list则插入数据表
-            db.beginTransaction();//开启事务操作
-            ContentValues values = new ContentValues();
-            for (AppInfo info : appInfos) {
-                values.put("app_id", info.get_id());
-                values.put("name", info.getName());
-                values.put("packagename", info.getPackageName());
-                values.put("icon", info.getApp_icon());
-                db.insert(tableName, null, values);
-                //循环使用values
-                values.clear();
-                //Log.i("DBHandler", info.get_id());
+                db.execSQL("drop table if exists " + oldTable);//删除旧表
+                shpre.edit().putString("oldVer", newTable).apply();//执行完操作newVer变为oldVer
+                db.setTransactionSuccessful();//事务成功
+                db.endTransaction();
             }
-            db.setTransactionSuccessful();//事务成功
-            db.endTransaction();
         }
-
     }
 
     /**
@@ -90,10 +121,14 @@ public class DBHandler {
      *
      * @return
      */
-    public List<AppInfo> loadList() {
+    public synchronized List<AppInfo> loadList() {
+
+        String oldTable = shpre.getString("oldVer", "old");
+
         List<AppInfo> list = new ArrayList<AppInfo>();
         try {
-            Cursor cursor = db.rawQuery("select distinct * from " + tableName, null);
+
+            Cursor cursor = db.rawQuery("select distinct * from " + oldTable, null);
             if (cursor.moveToFirst()) {
                 do {
                     AppInfo appInfo = new AppInfo();
@@ -105,13 +140,10 @@ public class DBHandler {
                 } while (cursor.moveToNext());
             }
             cursor.close();
-            db.close();
         } catch (Exception e) {
             Log.e("DBHandler", e.toString());
-        } finally {
-            return list;
         }
-
+        return list;
     }
 
     /**
@@ -119,17 +151,13 @@ public class DBHandler {
      *
      * @param packageName
      */
-    public void saveInstall(String packageName) {
-
+    public synchronized void saveInstall(String packageName) {
+        String oldTable = shpre.getString("oldVer", "old");
         ContentValues values = new ContentValues();
         values.put("packagename", packageName);
         db.insert("installed", null, values);
-
-        db.delete(tableName, "packagename = ?", new String[]{packageName});
-    }
-
-    public void closeDB() {
-        db.close();
+        //删除已安装的表项
+        db.delete(oldTable, "packagename = ?", new String[]{packageName});
     }
 
 }

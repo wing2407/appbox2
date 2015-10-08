@@ -9,18 +9,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Window;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         mPager = (ViewPager) findViewById(R.id.viewpager);
 
 
+
         data = initData();
         //这里传入参数比较多，目的让Activity的操作代码尽量简洁
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), this, group, mPager, data);
@@ -64,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+
     }
 
 
@@ -71,17 +64,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        SharedPreferences prefer = getSharedPreferences("dbVersion", MODE_PRIVATE);
-        int ver = prefer.getInt("ver", 1);//没有则读出默认值1
-        //根据ver访问数据库
-        if (ver != 1) {
-            DBHandler dbHandler = DBHandler.getInstance(this, ver);
-            List<AppInfo> appsList = dbHandler.loadList();
-            for (AppInfo info : appsList) {
+
+        SharedPreferences prefer = getSharedPreferences("dbTable", MODE_PRIVATE);
+        String ver = prefer.getString("oldVer", "old");
+        //ver不为默认值,访问数据库得到数据,前面有！号
+        if (!ver.equals("old")) {
+            DBHandler dbHandler = DBHandler.getInstance(this);
+            List<AppInfo> gridList = dbHandler.loadList();
+           /* for (AppInfo info : appsList) {
                 Log.i("MainActivity", info.getPackageName());
             }
-            Log.i("MainActivity", "shpre-->ver:" + ver);
-            dbHandler.closeDB();
+            Log.i("MainActivity", "shpre-->ver:" + ver);*/
         }
         startService(new Intent(this, UpdataIntentService.class));
     }
