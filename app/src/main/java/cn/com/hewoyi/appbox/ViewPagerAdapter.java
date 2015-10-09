@@ -12,29 +12,33 @@ import android.widget.LinearLayout;
 
 import java.util.List;
 
-class ViewPagerAdapter extends FragmentStatePagerAdapter {
+public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     //生成的fragment个数
-    static int NUM_ITEMS;
-    static int GRID_ITEM_COUNT = 12;
+    private int NUM_ITEMS;
+    //每个Fragment容纳的图标数，主界面是12个，广告栏为4个
+    private int GRID_ITEM_COUNT;
 
-    Context mContext;
-    LinearLayout group;//导航圆点布局
-    ViewPager mViewPager;//滑动布局
+    private Context mContext;
+    private LinearLayout group;//导航圆点布局
+    private ViewPager mViewPager;//滑动布局
     private ImageView[] imageViews;//导航图片
     private ImageView imageView;
-    private List<String> data;
+    private List<AppInfo> data;
 
-    public ViewPagerAdapter(FragmentManager fm, Context context, LinearLayout group, ViewPager viewPager, List<String> list) {
+    public ViewPagerAdapter(FragmentManager fm, Context context, LinearLayout group, ViewPager viewPager, List<AppInfo> list, int pagerLength) {
         super(fm);
         this.mContext = context;
         this.group = group;
         this.mViewPager = viewPager;
         this.data = list;
-        NUM_ITEMS = list.size() / GRID_ITEM_COUNT + 1;//一个fragment一个gridview，一个gridview有12个图标
-        initCirclePoint();
-        mViewPager.setOnPageChangeListener(new AdPageChangeListener());//滑动监听
+        this.GRID_ITEM_COUNT = pagerLength;
 
+        NUM_ITEMS = list.size() / GRID_ITEM_COUNT +1;//计算产生Fragment的数量，一个fragment一个gridview，一个gridview有GRID_ITEM_COUNT个图标
+        if (group != null) {
+            initCirclePoint();
+            mViewPager.setOnPageChangeListener(new AdPageChangeListener());//滑动监听
+        }
     }
 
     @Override
@@ -44,9 +48,9 @@ class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        //new新的Fragment
-        return new ViewPagerFragment(position, data.subList(position * GRID_ITEM_COUNT,
-                        position * GRID_ITEM_COUNT + GRID_ITEM_COUNT > data.size() ? data.size() : position * GRID_ITEM_COUNT + GRID_ITEM_COUNT));
+        //new新的Fragment(当数量大于每一页的规定数),并传入相应的data
+        return new GridFragment(position, data.subList(position * GRID_ITEM_COUNT,
+                position * GRID_ITEM_COUNT + GRID_ITEM_COUNT > data.size() ? data.size() : position * GRID_ITEM_COUNT + GRID_ITEM_COUNT));
 
     }
 
@@ -57,7 +61,7 @@ class ViewPagerAdapter extends FragmentStatePagerAdapter {
         for (int i = 0; i < NUM_ITEMS; i++) {
             //创建一个ImageView, 并设置宽高. 将该对象放入到数组中
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(20, 20));
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(15, 15));
             imageViews[i] = imageView;
 
             //初始值, 默认第0个选中

@@ -2,6 +2,7 @@ package cn.com.hewoyi.appbox;
 
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +19,9 @@ import java.util.List;
  */
 public class GridViewAdapter extends BaseAdapter {
     private Context mContext;
-    private List<String> mData;
+    private List<AppInfo> mData;
 
-    public GridViewAdapter(Context c,List<String> data) {
+    public GridViewAdapter(Context c,List<AppInfo> data) {
         mContext = c;
         mData =data;
     }
@@ -64,7 +65,9 @@ public class GridViewAdapter extends BaseAdapter {
             //imageView = (ImageView) convertView;
         }
 
-        viewHolder.appName_grid_item.setText(mData.get(position)+"");
+
+        viewHolder.appName_grid_item.setText(mData.get(position).getName()+"");
+        viewHolder.iv_grid_item.setImageBitmap(BitmapFactory.decodeByteArray(mData.get(position).getApp_icon(),0,mData.get(position).getApp_icon().length));
         return convertView;
        /* imageView.setImageResource(mThumbIds[position]);
         return imageView;*/
@@ -80,7 +83,7 @@ public class GridViewAdapter extends BaseAdapter {
 
     }
 
-    // references to our images
+    /*// references to our images
     private Integer[] mThumbIds = {
             R.mipmap.ic_launcher, R.mipmap.ic_launcher,
             R.mipmap.ic_launcher, R.mipmap.ic_launcher,
@@ -94,6 +97,6 @@ public class GridViewAdapter extends BaseAdapter {
             R.mipmap.ic_launcher, R.mipmap.ic_launcher,
 
 
-    };
+    };*/
 }
 

@@ -1,7 +1,6 @@
 package cn.com.hewoyi.appbox;
 
 
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,17 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
 
-public class ViewPagerFragment extends Fragment implements AdapterView.OnItemClickListener ,AdapterView.OnItemLongClickListener{
+public class GridFragment extends Fragment implements AdapterView.OnItemClickListener ,AdapterView.OnItemLongClickListener{
 
     int mNum;
-    List<String> gridData;//一个Fragment的数据
+    List<AppInfo> gridData;//一个Fragment的数据
 
-    public ViewPagerFragment(int num,List<String> data) {
+    public GridFragment(int num,List<AppInfo> data) {
         //Log.i("ViewPagerFragment", num + "");
         gridData = data;
         mNum  = num;
@@ -76,12 +74,15 @@ public class ViewPagerFragment extends Fragment implements AdapterView.OnItemCli
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(getActivity(), gridData.get(position), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), gridData.get(position).getPackageName(), Toast.LENGTH_SHORT).show();
     }
+
+
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(getActivity(), "长按："+gridData.get(position), Toast.LENGTH_SHORT).show();
+
+        Toast.makeText(getActivity(), "长按："+gridData.get(position).getPackageName(), Toast.LENGTH_SHORT).show();
         return true;
     }
 }

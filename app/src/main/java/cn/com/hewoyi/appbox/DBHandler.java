@@ -65,7 +65,7 @@ public class DBHandler {
      *
      * @param appInfos
      */
-    public synchronized void saveList(List<AppInfo> appInfos) {
+    public synchronized void saveADList(List<AppInfo> appInfos) {
         //String newTable = shpre.getString("newVer", "");
 
 
@@ -121,7 +121,7 @@ public class DBHandler {
      *
      * @return
      */
-    public synchronized List<AppInfo> loadList() {
+    public synchronized List<AppInfo> loadADList() {
 
         String oldTable = shpre.getString("oldVer", "old");
 
@@ -136,6 +136,7 @@ public class DBHandler {
                     appInfo.setName(cursor.getString(cursor.getColumnIndex("name")));
                     appInfo.setPackageName(cursor.getString(cursor.getColumnIndex("packagename")));
                     appInfo.setApp_icon(cursor.getBlob(cursor.getColumnIndex("icon")));
+                    appInfo.setIsAD(true);//广告list
                     list.add(appInfo);
                 } while (cursor.moveToNext());
             }
@@ -158,6 +159,53 @@ public class DBHandler {
         db.insert("installed", null, values);
         //删除已安装的表项
         db.delete(oldTable, "packagename = ?", new String[]{packageName});
+    }
+
+
+    //插入gridView表的数据
+    public synchronized void saveGridList(List<AppInfo> gridList) {
+        if (gridList != null) {
+            ContentValues values = new ContentValues();
+            for (AppInfo info : gridList) {
+                values.put("app_id", info.get_id());
+                values.put("name", info.getName());
+                values.put("packagename", info.getPackageName());
+                values.put("icon", info.getApp_icon());
+                db.insert("gridlist", null, values);
+                //循环使用values
+                values.clear();
+                //Log.i("DBHandler", info.get_id());
+            }
+        }
+    }
+
+    //加载gridView的数据
+    public synchronized List<AppInfo> loadGridList() {
+        List<AppInfo> gridList = new ArrayList<AppInfo>();
+        Cursor cursor = db.rawQuery("select distinct * from gridlist", null);
+        if (cursor.moveToFirst()) {
+            do {
+                AppInfo appInfo = new AppInfo();
+                appInfo.set_id(cursor.getString(cursor.getColumnIndex("app_id")));
+                appInfo.setName(cursor.getString(cursor.getColumnIndex("name")));
+                appInfo.setPackageName(cursor.getString(cursor.getColumnIndex("packagename")));
+                appInfo.setApp_icon(cursor.getBlob(cursor.getColumnIndex("icon")));
+                appInfo.setIsAD(false);//非广告list
+                gridList.add(appInfo);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return gridList;
+    }
+
+    public synchronized void deleteGridList(List<AppInfo> delList) {
+        if (delList != null) {
+            //删除选中的表项
+            for (AppInfo info : delList) {
+                db.delete("gridlist", "packagename = ?", new String[]{info.getPackageName()});
+            }
+        }
     }
 
 }

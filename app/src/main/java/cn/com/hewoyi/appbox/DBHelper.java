@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.Stack;
+
 public class DBHelper extends SQLiteOpenHelper {
 
     private Context mContext;
@@ -22,6 +24,12 @@ public class DBHelper extends SQLiteOpenHelper {
             "packagename text)";
 
 
+    private static final String GRIDLIST = "create table if not exists gridlist(" +
+            "id integer primary key autoincrement, " +
+            "app_id text, " +
+            "name text, " +
+            "packagename text, " +
+            "icon blob)";
 
     public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -32,7 +40,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-       // db.execSQL(tableName(date));
+        db.execSQL(GRIDLIST);
         db.execSQL(INSTALLED);
         //Log.i("DBHelper", tableName(date));
 

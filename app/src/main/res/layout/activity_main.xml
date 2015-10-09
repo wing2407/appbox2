@@ -75,7 +75,7 @@
         android:layout_width="match_parent"
         android:layout_height="80dp" >
 
-        <GridView
+        <!--<GridView
             android:id="@+id/addMoreGridView"
             android:layout_width="match_parent"
             android:layout_height="80dp"
@@ -83,7 +83,15 @@
             android:fadeScrollbars="true"
             android:gravity="center|top"
             android:numColumns="4" >
-        </GridView>
+        </GridView>-->
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/ad_viewpager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            >
+        </android.support.v4.view.ViewPager>
 
         <TextView
             android:id="@+id/noAppTitle"
