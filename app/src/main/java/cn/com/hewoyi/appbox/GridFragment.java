@@ -1,6 +1,10 @@
 package cn.com.hewoyi.appbox;
 
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,32 +14,34 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.lidroid.xutils.HttpUtils;
+
 import java.util.List;
 
-public class GridFragment extends Fragment implements AdapterView.OnItemClickListener ,AdapterView.OnItemLongClickListener{
+public class GridFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     int mNum;
     List<AppInfo> gridData;//一个Fragment的数据
 
-    public GridFragment(int num,List<AppInfo> data) {
+    public GridFragment(int num, List<AppInfo> data) {
         //Log.i("ViewPagerFragment", num + "");
         gridData = data;
-        mNum  = num;
-
+        mNum = num;
     }
-/*
-    public static ViewPagerFragment newInstance(int num, List<String> data) {
+    
+ /*   public static GridFragment newInstance(int num, List<String> data) {
         gridData = data;
-        ViewPagerFragment f = new ViewPagerFragment();
+        GridFragment f = new GridFragment();
 
         // Supply num input as an argument.
         Bundle args = new Bundle();
         args.putInt("num", num);
+        args.putParcelable();
         f.setArguments(args);
 
         return f;
-    }*/
-
+    }
+*/
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,29 +66,44 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
         return v;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-    }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(getActivity(), gridData.get(position).getPackageName(), Toast.LENGTH_SHORT).show();
-    }
+        if (gridData.get(position).isAD()) {
+            //下载并安装
+            NetworkInfo activeNetInfo = ((ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+            if (activeNetInfo != null && activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                //wifi环境下载
+                Toast.makeText(getActivity(), "广告列表" + gridData.get(position).getPackageName() + "开启下载", Toast.LENGTH_SHORT).show();
+                HttpUtils httpUtils;
+            } else {
+                Toast.makeText(getActivity(), "广告列表" + gridData.get(position).getPackageName() + "请先连接wifi", Toast.LENGTH_SHORT).show();
+            }
 
+        } else if (gridData.get(position).getPackageName().equals("add")) {
+            //弹出已安装应用列表，并想办法获取返回数据
+            Toast.makeText(getActivity(), gridData.get(position).getPackageName() + "弹出添加已安装应用的列表", Toast.LENGTH_SHORT).show();
+        } else {
+            //打开已安装应用（对应packageName的应用）
+            Toast.makeText(getActivity(), gridData.get(position).getPackageName() + "主界面", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-
-        Toast.makeText(getActivity(), "长按："+gridData.get(position).getPackageName(), Toast.LENGTH_SHORT).show();
+        if (gridData.get(position).isAD()) {
+            //不做操作
+            Toast.makeText(getActivity(), "广告列表长按不做操作", Toast.LENGTH_SHORT).show();
+        } else {
+            //进入删除模式
+            Toast.makeText(getActivity(), "长按" + gridData.get(position).getPackageName() + "删除模式", Toast.LENGTH_SHORT).show();
+        }
         return true;
     }
 }
