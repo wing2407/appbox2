@@ -29,3 +29,12 @@ public static final int *;
 -keep class okio.** {*;}
 -dontwarn  okio.**
 
+
+-dontwarn android.support.**
+-dontwarn com.alibaba.fastjson.**
+-keep class com.alibaba.fastjson.** { *; }
+
+-keepclassmembers class * {
+public <methods>;
+}
+-keepattributes Signature

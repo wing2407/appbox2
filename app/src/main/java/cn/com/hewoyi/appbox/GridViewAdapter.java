@@ -19,16 +19,16 @@ import java.util.List;
  */
 public class GridViewAdapter extends BaseAdapter {
     private Context mContext;
-    private List<AppInfo> mData;
+    List<AppInfo> mData;
 
     public GridViewAdapter(Context c,List<AppInfo> data) {
         mContext = c;
         mData =data;
     }
 
+    @Override
     public int getCount() {
         return mData.size();
-        //return mThumbIds.length;
     }
 
     public Object getItem(int position) {
@@ -74,7 +74,7 @@ public class GridViewAdapter extends BaseAdapter {
 
     }
 
-    class ViewHolder{
+    public class ViewHolder{
         ImageView iv_grid_item;
         ProgressBar pb_grid_item;
         TextView pb_text_grid_item;

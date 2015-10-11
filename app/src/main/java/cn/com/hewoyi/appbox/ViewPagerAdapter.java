@@ -54,6 +54,12 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     }
 
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
+
+    }
+
     //动态增长小圆点导航
     private void initCirclePoint() {
         imageViews = new ImageView[NUM_ITEMS];
