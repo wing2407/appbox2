@@ -36,7 +36,7 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
     GridView gridView;
 
     static final int REQUEST_INSTALL = 1;//安装成功标志
-    static final int REQUEST_UNINSTALL = 2;//安装失败标志
+    static final int REQUEST_ADD_APP = 2;//Activity_addapp的标志
 
     public GridFragment(int num, List<AppInfo> data) {
         //Log.i("ViewPagerFragment", num + "");
@@ -88,18 +88,43 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
             if (resultCode == Activity.RESULT_OK) {
                 //安装成功则获取包名,并清除相应缓存
                 AppInfo info = install_list.get(install_list.size() - 1);
-                Toast.makeText(getActivity(), info.getPackageName() + "Install succeeded!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), info.getPackageName() + "安装成功，正在启动...!", Toast.LENGTH_SHORT).show();
                 install_list.remove(info);
-                //视图更新
-                gridData.remove(info);
-                // gridView.get
-                // ((GridViewAdapter)gridView.getAdapter()).notifyDataSetInvalidated();
+                //保存到数据库
+                //DBHandler dbHandler = DBHandler.getInstance(getActivity());
+                // dbHandler.saveInstall(info.getPackageName());
 
-                //startActivity(new Intent(getActivity().getPackageManager().getLaunchIntentForPackage(info.getPackageName())));
+                //视图更新(有bug...待解决)
+                gridData.remove(info);
+                //((GridViewAdapter)gridView.getAdapter()).mData.remove(info);
+                //((GridViewAdapter)gridView.getAdapter()).notifyDataSetInvalidated();
+
+                startActivity(new Intent(getActivity().getPackageManager().getLaunchIntentForPackage("com.weather.app")));
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Toast.makeText(getActivity(), "你取消了安装!", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getActivity(), "Install Failed!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "安装错误!", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_ADD_APP) {
+            if (resultCode == Activity.RESULT_OK) {
+                //获取addapp返回的数据,并保存到数据库
+                List<AppInfo> list = data.getParcelableArrayListExtra("list");
+                //DBHandler dbHandler = DBHandler.getInstance(getActivity());
+                //dbHandler.saveGridList(list);
+
+
+                String list_info = "";
+                for (AppInfo info : list) {
+                    list_info = list_info + info.getName();
+                }
+                Toast.makeText(getActivity(), "你添加了-->" + list_info, Toast.LENGTH_SHORT).show();
+
+                //添加视图(待完成...有bug)
+
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                Toast.makeText(getActivity(), "你取消了添加应用!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "添加过程出现错误!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -113,14 +138,13 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
                 //wifi环境下载并安装
                 downAndInstall(gridData.get(position), view);
                 Toast.makeText(getActivity(), "广告列表" + gridData.get(position).getPackageName() + "开启下载", Toast.LENGTH_SHORT).show();
-
             } else {
-                Toast.makeText(getActivity(), "广告列表" + gridData.get(position).getPackageName() + "请先连接wifi", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "请先连接wifi", Toast.LENGTH_SHORT).show();
             }
 
         } else if (gridData.get(position).getPackageName().equals("add")) {
-            //弹出已安装应用列表，并想办法获取返回数据
-            Toast.makeText(getActivity(), gridData.get(position).getPackageName() + "弹出添加已安装应用的列表", Toast.LENGTH_SHORT).show();
+            //弹出已安装应用的Acitivity，获取返回数据
+            startActivityForResult(new Intent(getActivity(), Activity_Addapp.class), REQUEST_ADD_APP);
         } else {
             //打开已安装应用（对应packageName的应用）
             startActivity(new Intent(getActivity().getPackageManager().getLaunchIntentForPackage(gridData.get(position).getPackageName())));
@@ -148,8 +172,7 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
     private void downAndInstall(final AppInfo info, View view) {
         HttpUtils httpUtils = new HttpUtils();
         final GridViewAdapter.ViewHolder holder = (GridViewAdapter.ViewHolder) view.getTag();
-        HttpHandler handler = httpUtils.download("http://192.168.1.164/" + info.get_id() + "/download",
-                "/sdcard/Download/" + info.getName() + ".apk",
+        HttpHandler handler = httpUtils.download("http://192.168.1.9/" + info.get_id() + "/download", "/sdcard/Download/" + info.getName() + ".apk",
                 true, // 如果目标文件存在，接着未完成的部分继续下载。服务器不支持RANGE时将从新下载。
                 false, // 如果从请求返回信息中获取到文件名，下载完成后自动重命名。
                 new RequestCallBack<File>() {
@@ -183,9 +206,10 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
 
                     @Override
                     public void onFailure(HttpException error, String msg) {
+
+                        holder.pb_grid_item.setVisibility(View.GONE);
+                        holder.pb_text_grid_item.setVisibility(View.GONE);
                         if (msg.equals("maybe the file has downloaded completely")) {
-                            holder.pb_grid_item.setVisibility(View.GONE);
-                            holder.pb_text_grid_item.setVisibility(View.GONE);
                             install_list.add(info);
 
                             Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
@@ -195,8 +219,9 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
                             intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, info.getPackageName());
                             startActivityForResult(intent, REQUEST_INSTALL);
 
+                        } else {
+                            Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
                     }
                 });
     }

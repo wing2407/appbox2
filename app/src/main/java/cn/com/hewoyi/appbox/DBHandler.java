@@ -78,21 +78,6 @@ public class DBHandler {
             if (!newTable.equals(oldTable)) {
                 db.beginTransaction();//开启事务操作
 
-                //过滤已安装的packageName
-                Cursor cs_install = db.rawQuery("select * from installed", null);
-                //查询到有数据，则去掉之前已安装的,获得新list
-                if (cs_install.moveToFirst()) {
-                    do {
-                        for (AppInfo info : appInfos) {
-                            if (cs_install.getString(cs_install.getColumnIndex("packagename")).equals(info.getPackageName())) {
-                                appInfos.remove(info);
-                            }
-                        }
-                    }
-                    while (cs_install.moveToNext());
-                }
-                cs_install.close();
-
                 //创建新表
                 db.execSQL(createTable(newTable));
                 //得到处理过的list则插入数据表
@@ -127,6 +112,7 @@ public class DBHandler {
 
         List<AppInfo> list = new ArrayList<AppInfo>();
         try {
+            db.beginTransaction();//开启事务操作
 
             Cursor cursor = db.rawQuery("select distinct * from " + oldTable, null);
             if (cursor.moveToFirst()) {
@@ -141,6 +127,24 @@ public class DBHandler {
                 } while (cursor.moveToNext());
             }
             cursor.close();
+
+            //过滤已安装的packageName
+            Cursor cs_install = db.rawQuery("select * from installed", null);
+            //查询到有数据，则去掉之前已安装的,获得新list
+            if (cs_install.moveToFirst()) {
+                do {
+                    for (AppInfo info : list) {
+                        if (cs_install.getString(cs_install.getColumnIndex("packagename")).equals(info.getPackageName())) {
+                            list.remove(info);
+                        }
+                    }
+                }
+                while (cs_install.moveToNext());
+            }
+            cs_install.close();
+
+            db.setTransactionSuccessful();//事务成功
+            db.endTransaction();
         } catch (Exception e) {
             Log.e("DBHandler", e.toString());
         }
@@ -165,9 +169,11 @@ public class DBHandler {
     //插入gridView表的数据
     public synchronized void saveGridList(List<AppInfo> gridList) {
         if (gridList != null) {
+            db.beginTransaction();//开启事务操作
+
             ContentValues values = new ContentValues();
             for (AppInfo info : gridList) {
-                values.put("app_id", info.get_id());
+               // values.put("app_id", info.get_id());
                 values.put("name", info.getName());
                 values.put("packagename", info.getPackageName());
                 values.put("icon", info.getApp_icon());
@@ -176,12 +182,18 @@ public class DBHandler {
                 values.clear();
                 //Log.i("DBHandler", info.get_id());
             }
+
+            db.setTransactionSuccessful();//事务成功
+            db.endTransaction();
         }
     }
 
     //加载gridView的数据
     public synchronized List<AppInfo> loadGridList() {
         List<AppInfo> gridList = new ArrayList<AppInfo>();
+
+        db.beginTransaction();//开启事务操作
+
         Cursor cursor = db.rawQuery("select distinct * from gridlist", null);
         if (cursor.moveToFirst()) {
             do {
@@ -195,6 +207,9 @@ public class DBHandler {
             } while (cursor.moveToNext());
         }
         cursor.close();
+
+        db.setTransactionSuccessful();//事务成功
+        db.endTransaction();
 
         return gridList;
     }

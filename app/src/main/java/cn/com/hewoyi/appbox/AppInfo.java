@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 
-public class AppInfo implements Parcelable{
+public class AppInfo implements Parcelable {
 
     private String name;
     private String _id;
@@ -95,6 +95,6 @@ public class AppInfo implements Parcelable{
         dest.writeString(_id);
         dest.writeString(packageName);
         dest.writeByteArray(app_icon);
-        dest.writeByte((byte) (isAD ? 1 : 0)); //if isAD == true, byte == 1
+       dest.writeByte((byte) (isAD ? 1 : 0)); //if isAD == true, byte == 1
     }
 }

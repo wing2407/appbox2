@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="5dp"
+    android:paddingRight="10dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <!-- android:scaleType="fitXY"把图片按照指定的大小在View中显示，
+    拉伸显示图片，不保持原比例，填满View. -->
+    <ImageView
+        android:id="@+id/iv_app_manager_icon"
+        android:layout_width="60dip"
+        android:layout_height="60dip"
+        android:scaleType="fitXY"/>
+
+    <TextView
+        android:id="@+id/tv_app_manager_name"
+        android:layout_toRightOf="@id/iv_app_manager_icon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_weight="1"
+        android:layout_marginTop="5dip"
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="21sp"
+        />
+
+
+    <android.support.v7.widget.AppCompatCheckBox
+        android:id="@+id/item_home_checked"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center_vertical"
+        ></android.support.v7.widget.AppCompatCheckBox>
+
+</LinearLayout>
