@@ -2,6 +2,7 @@ package cn.com.hewoyi.appbox;
 
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,16 +19,16 @@ import java.util.List;
  */
 public class GridViewAdapter extends BaseAdapter {
     private Context mContext;
-    private List<String> mData;
+    List<AppInfo> mData;
 
-    public GridViewAdapter(Context c,List<String> data) {
+    public GridViewAdapter(Context c,List<AppInfo> data) {
         mContext = c;
         mData =data;
     }
 
+    @Override
     public int getCount() {
         return mData.size();
-        //return mThumbIds.length;
     }
 
     public Object getItem(int position) {
@@ -64,14 +65,15 @@ public class GridViewAdapter extends BaseAdapter {
             //imageView = (ImageView) convertView;
         }
 
-        viewHolder.appName_grid_item.setText(mData.get(position)+"");
+        viewHolder.appName_grid_item.setText(mData.get(position).getName()+"");
+        viewHolder.iv_grid_item.setImageBitmap(BitmapFactory.decodeByteArray(mData.get(position).getApp_icon(),0,mData.get(position).getApp_icon().length));
         return convertView;
        /* imageView.setImageResource(mThumbIds[position]);
         return imageView;*/
 
     }
 
-    class ViewHolder{
+    public class ViewHolder{
         ImageView iv_grid_item;
         ProgressBar pb_grid_item;
         TextView pb_text_grid_item;
@@ -80,7 +82,7 @@ public class GridViewAdapter extends BaseAdapter {
 
     }
 
-    // references to our images
+    /*// references to our images
     private Integer[] mThumbIds = {
             R.mipmap.ic_launcher, R.mipmap.ic_launcher,
             R.mipmap.ic_launcher, R.mipmap.ic_launcher,
@@ -94,6 +96,6 @@ public class GridViewAdapter extends BaseAdapter {
             R.mipmap.ic_launcher, R.mipmap.ic_launcher,
 
 
-    };
+    };*/
 }
 

@@ -15,3 +15,26 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+
+-keepclassmembers class * {
+   public <init>(org.json.JSONObject);
+}
+
+
+-keep public class cn.com.hewoyi.AppBox.R$*{
+public static final int *;
+}
+
+-keep class okio.** {*;}
+-dontwarn  okio.**
+
+
+-dontwarn android.support.**
+-dontwarn com.alibaba.fastjson.**
+-keep class com.alibaba.fastjson.** { *; }
+
+-keepclassmembers class * {
+public <methods>;
+}
+-keepattributes Signature

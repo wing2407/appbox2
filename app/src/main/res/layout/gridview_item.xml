@@ -3,7 +3,8 @@
     android:id="@+id/griditem"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:focusable = "false">
 
     <FrameLayout
         android:layout_width="70dp"
@@ -17,8 +18,8 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:scaleType="fitXY"
-            android:background="@drawable/bg_griditem"
-            android:src="@mipmap/ic_launcher" />
+            android:background="@drawable/bg_griditem"/>
+           <!-- android:src="@mipmap/ic_launcher" />-->
 
 
 <!--        <ImageView
@@ -58,7 +59,7 @@
             android:singleLine="true"
             android:text="hello"
             android:textColor="@android:color/black"
-            android:textSize="12sp" />
+            android:textSize="12sp"/>
 
         <Button
             android:id="@+id/delete_grid_item"
