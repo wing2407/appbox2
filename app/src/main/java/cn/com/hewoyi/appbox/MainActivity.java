@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         //这里传入参数比较多，目的让Activity的操作代码尽量简洁
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), this, group, mPager, gridList, 12);
         mPager.setAdapter(mAdapter);
-        mPager.setOffscreenPageLimit(gridList.size()/12);
+        mPager.setOffscreenPageLimit(0);
 
 
         adPager = (ViewPager) findViewById(R.id.ad_viewpager);
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.noAppTitle).setVisibility(View.GONE);//隐藏文本
                 adAdapter = new ViewPagerAdapter(getSupportFragmentManager(), this, null, adPager, adList, 4);
                 adPager.setAdapter(adAdapter);
-                adPager.setOffscreenPageLimit(gridList.size() / 4);
+                adPager.setOffscreenPageLimit(0);
             }
         }
 
@@ -78,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         findViewById(R.id.nextAppBtn).setOnClickListener(new View.OnClickListener() {
-            boolean flag = true;//滚动判断标志
+            boolean flag = adPager.getCurrentItem()!=adAdapter.getCount();//滚动判断标志
+
             @Override
             public void onClick(View v) {
 

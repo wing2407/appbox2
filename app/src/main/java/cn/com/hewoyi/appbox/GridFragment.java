@@ -4,19 +4,28 @@ package cn.com.hewoyi.appbox;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.lidroid.xutils.HttpUtils;
@@ -96,8 +105,11 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
 
                 //视图更新(有bug...待解决)
                 gridData.remove(info);
+                //FragmentManager fragmentManager = null;
+                //getFragmentManager().beginTransaction().remove(ad).commit();
+                //getFragmentManager().executePendingTransactions();
                 //((GridViewAdapter)gridView.getAdapter()).mData.remove(info);
-                //((GridViewAdapter)gridView.getAdapter()).notifyDataSetInvalidated();
+                ((GridViewAdapter)gridView.getAdapter()).notifyDataSetInvalidated();
 
                 startActivity(new Intent(getActivity().getPackageManager().getLaunchIntentForPackage("com.weather.app")));
             } else if (resultCode == Activity.RESULT_CANCELED) {
@@ -163,6 +175,7 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
         } else {
             //进入删除模式
             Toast.makeText(getActivity(), "长按" + gridData.get(position).getPackageName() + "删除模式", Toast.LENGTH_SHORT).show();
+            deleteMode();
         }
         return true;
     }
@@ -172,7 +185,7 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
     private void downAndInstall(final AppInfo info, View view) {
         HttpUtils httpUtils = new HttpUtils();
         final GridViewAdapter.ViewHolder holder = (GridViewAdapter.ViewHolder) view.getTag();
-        HttpHandler handler = httpUtils.download("http://192.168.1.9/" + info.get_id() + "/download", "/sdcard/Download/" + info.getName() + ".apk",
+        HttpHandler handler = httpUtils.download("http://192.168.1.12/" + info.get_id() + "/download", "/sdcard/Download/" + info.getName() + ".apk",
                 true, // 如果目标文件存在，接着未完成的部分继续下载。服务器不支持RANGE时将从新下载。
                 false, // 如果从请求返回信息中获取到文件名，下载完成后自动重命名。
                 new RequestCallBack<File>() {
@@ -181,6 +194,7 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
                     public void onStart() {
                         holder.pb_grid_item.setVisibility(View.VISIBLE);
                         holder.pb_text_grid_item.setVisibility(View.VISIBLE);
+                        changeLight(holder.iv_grid_item,-80);
                     }
 
                     @Override
@@ -193,6 +207,7 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
                         //下载完成后隐藏进度条
                         holder.pb_grid_item.setVisibility(View.GONE);
                         holder.pb_text_grid_item.setVisibility(View.GONE);
+                        changeLight(holder.iv_grid_item, 0);
                         install_list.add(info);//加入缓存list
                         //执行安装
                         Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
@@ -209,6 +224,7 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
 
                         holder.pb_grid_item.setVisibility(View.GONE);
                         holder.pb_text_grid_item.setVisibility(View.GONE);
+                        changeLight(holder.iv_grid_item, 0);
                         if (msg.equals("maybe the file has downloaded completely")) {
                             install_list.add(info);
 
@@ -224,5 +240,55 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
                         }
                     }
                 });
+    }
+
+    private void deleteMode(){
+        View animView;
+        Button deleteBtn;
+        for (int i = 0; i < gridView.getChildCount(); i++) {
+            animView = gridView.getChildAt(i);
+            AppInfo info = gridData.get(i);
+            if (!info.getPackageName().equals("add")) {
+                animView.startAnimation(createFastRotateAnimation());
+                deleteBtn = (Button) animView.findViewById(R.id.delete_grid_item);
+                gridView.setOnItemClickListener(null);
+                deleteBtn.setVisibility(View.VISIBLE);
+                deleteBtn.setTag(i);
+                deleteBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Log.i("GridFragment", (int) v.getTag() + "");
+                       gridData.remove((int) v.getTag());
+
+                       ((GridViewAdapter)gridView.getAdapter()).notifyDataSetChanged();
+                        if(gridData.size()==0){
+                            Toast.makeText(getActivity(),"需代码处理",Toast.LENGTH_SHORT).show();
+                        }
+                       // ((View)v.getParent()).setVisibility(View.GONE);
+
+
+                    }
+                });
+            }
+        }
+    }
+
+    private Animation createFastRotateAnimation() {
+        Animation rotate = new RotateAnimation(-2.0f, 2.0f,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                0.5f);
+        rotate.setRepeatMode(Animation.REVERSE);
+        rotate.setRepeatCount(Animation.INFINITE);
+        rotate.setDuration(60);
+        rotate.setInterpolator(new AccelerateDecelerateInterpolator());
+        return rotate;
+    }
+
+    //改变亮度，方便进度显示
+    private void changeLight(ImageView imageview, int brightness) {
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.set(new float[]{1, 0, 0, 0, brightness, 0, 1, 0, 0,
+                brightness, 0, 0, 1, 0, brightness, 0, 0, 0, 1, 0});
+        imageview.setColorFilter(new ColorMatrixColorFilter(matrix));
     }
 }
