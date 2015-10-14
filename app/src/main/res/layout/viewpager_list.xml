@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:numColumns="4"
-        android:drawSelectorOnTop="false"
+        android:drawSelectorOnTop="true"
+        android:fadeScrollbars="true"
         android:listSelector="@android:color/transparent"/>
 
     <!-- The frame layout is here since we will be showing either

@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,7 +111,7 @@ public class DBHandler {
 
         String oldTable = shpre.getString("oldVer", "old");
 
-        List<AppInfo> list = new ArrayList<AppInfo>();
+        ArrayList<AppInfo> list = new ArrayList<AppInfo>();
         try {
             db.beginTransaction();//开启事务操作
 
@@ -214,13 +215,9 @@ public class DBHandler {
         return gridList;
     }
 
-    public synchronized void deleteGridList(List<AppInfo> delList) {
-        if (delList != null) {
+    public synchronized void deleteGridList(AppInfo info) {
             //删除选中的表项
-            for (AppInfo info : delList) {
-                db.delete("gridlist", "packagename = ?", new String[]{info.getPackageName()});
-            }
-        }
+        db.delete("gridlist", "packagename = ?", new String[]{info.getPackageName()});
     }
 
 }

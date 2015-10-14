@@ -2,14 +2,19 @@ package cn.com.hewoyi.appbox;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -34,8 +39,11 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         this.data = list;
         this.GRID_ITEM_COUNT = pagerLength;
 
+
         NUM_ITEMS = list.size() / GRID_ITEM_COUNT +1;//计算产生Fragment的数量，一个fragment一个gridview，一个gridview有GRID_ITEM_COUNT个图标
+       //group区分广告列表和主界面列表
         if (group != null) {
+            data.add(new AppInfo("添加应用", "add", "add", bitmapToBytes(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.addapp)), false));
             initCirclePoint();
             mViewPager.setOnPageChangeListener(new AdPageChangeListener());//滑动监听
         }
@@ -49,15 +57,15 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         //new新的Fragment(当数量大于每一页的规定数),并传入相应的data
-        return new GridFragment(position, data.subList(position * GRID_ITEM_COUNT,
-                position * GRID_ITEM_COUNT + GRID_ITEM_COUNT > data.size() ? data.size() : position * GRID_ITEM_COUNT + GRID_ITEM_COUNT));
+
+        return GridFragment.newInstance(position, data.subList(position * GRID_ITEM_COUNT, position * GRID_ITEM_COUNT + GRID_ITEM_COUNT > data.size() ? data.size() : position * GRID_ITEM_COUNT + GRID_ITEM_COUNT));
 
     }
 
-    @Override
-    public int getItemPosition(Object object) {
-        return POSITION_NONE;
-
+    private byte[] bitmapToBytes(Bitmap bm) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        return baos.toByteArray();
     }
 
     //动态增长小圆点导航
