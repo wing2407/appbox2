@@ -1,40 +1,32 @@
 package cn.com.hewoyi.appbox;
 
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.GridView;
+
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
 
 
-    ViewPagerAdapter mAdapter;
-    ViewPager mPager;
-    LinearLayout group;
+    ViewPagerAdapter mAdapter;  //主列表适配器
+    ViewPager mPager;           //主界面
+    LinearLayout group;         //小圆点布局
+    RelativeLayout relativeLayout;//广告布局
+    ViewPagerAdapter adAdapter; //广告列表适配器
+    ViewPager adPager;          //广告列表
 
-    ViewPagerAdapter adAdapter;
-    ViewPager adPager;
-
-    public boolean DELETE_MODE = false;
+    public boolean DELETE_MODE = false;//删除模式标志
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,26 +34,25 @@ public class MainActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
-        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.container);
-
+        relativeLayout = (RelativeLayout) findViewById(R.id.container);
         mPager = (ViewPager) findViewById(R.id.viewpager);
-
-        long grid_time = System.currentTimeMillis();
-        //访问数据库加载主界面gridVIew数据
-        DBHandler dbHandler = DBHandler.getInstance(getApplicationContext());
-        //List<AppInfo> gridList = dbHandler.loadGridList();
-        //加入额外的addApp图标
-        //gridList.add(new AppInfo("添加应用", "add", "add", bitmapToBytes(BitmapFactory.decodeResource(getResources(), R.drawable.addapp)), false));
         group = (LinearLayout) findViewById(R.id.viewGroup);
-        //这里传入参数比较多，目的让Activity的操作代码尽量简洁
-        mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), getApplicationContext(),  dbHandler.loadGridList(), group, mPager,12);
-        mPager.setAdapter(mAdapter);
-        Log.i("MainActivity", "grid_load-->" + (System.currentTimeMillis() - grid_time) + "ms");
-
-
         adPager = (ViewPager) findViewById(R.id.ad_viewpager);
 
-        long ad_time = System.currentTimeMillis();
+        startService(new Intent(this,TaskIntentService.class));
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        DBHandler dbHandler = DBHandler.getInstance(getApplicationContext());
+
+        // //访问数据库加载主界面gridVIew数据,这里传入参数比较多，目的让Activity的操作代码尽量简洁
+        mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), getApplicationContext(), dbHandler.loadGridList(), group, mPager, 12);
+        mPager.setAdapter(mAdapter);
+
         String ver = getSharedPreferences("dbTable", MODE_PRIVATE).getString("oldVer", "old");
         //ver为默认值,证明数据库还没有存在从接口拿下来的数据,否则访问数据库得到数据
         if (ver.equals("old")) {
@@ -71,16 +62,16 @@ public class MainActivity extends AppCompatActivity {
             linearParams.height = dip2px(this, 395); // 当控件的高强制设成适配父窗口
             relativeLayout.setLayoutParams(linearParams); // 使设置好的布局参数应用到控件relatucelayout
         } else {
-            //加载广告的数据list
-            // List<AppInfo> adList = dbHandler.loadADList();
-            //这里传入参数比较多，目的让Activity的操作代码尽量简洁
-            findViewById(R.id.noAppTitle).setVisibility(View.GONE);//隐藏文本
-            adAdapter = new ViewPagerAdapter(getSupportFragmentManager(), getApplicationContext(), dbHandler.loadADList(), null, adPager, 4);
-            adPager.setAdapter(adAdapter);
-
+            //加载广告的数据list,不为空则显示，前面有！号
+            List<AppInfo> adList = dbHandler.loadADList();
+            if (!adList.isEmpty()) {
+                findViewById(R.id.noAppTitle).setVisibility(View.GONE);//隐藏文本
+                //这里传入参数比较多，目的让Activity的操作代码尽量简洁
+                adAdapter = new ViewPagerAdapter(getSupportFragmentManager(), getApplicationContext(), adList, null, adPager, 4);
+                adPager.setAdapter(adAdapter);
+            }
 
         }
-        Log.i("MainActivity", "ad_load-->" + (System.currentTimeMillis() - ad_time) + "ms");
 
         findViewById(R.id.nextAppBtn).setOnClickListener(new View.OnClickListener() {
 
@@ -105,39 +96,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        if (intent.getStringExtra("install") != null && intent.getStringExtra("install").equals("install")) {
-            adAdapter.notifyDataSetChanged();
-        } else if (intent.getStringExtra("deleteMode") != null && intent.getStringExtra("deleteMode").equals("deleteMode")) {
-            //mAdapter.notifyDataSetChanged();
-            DELETE_MODE=true;
-        }
-
-    }
-
-
-
     @Override
     protected void onResume() {
         super.onResume();
-        //从接口拿数据
-        startService(new Intent(this, UpdataIntentService.class));
 
+        //从接口拿数据,从应用启动开始就获取，避免Activity的销毁创建而多次启动
+        startService(new Intent(this, UpdataIntentService.class));
     }
 
     @Override
     public void onBackPressed() {
         if (DELETE_MODE) {
-            //startActivity(new Intent(this,MainActivity.class));
-            //finish();
-            Toast.makeText(this, "delete mode", Toast.LENGTH_LONG).show();
-           //recreate();
-            mAdapter.notifyDataSetChanged();
-            DELETE_MODE = false;
+            //删除模式重启activity
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
             return;
         }
         super.onBackPressed();

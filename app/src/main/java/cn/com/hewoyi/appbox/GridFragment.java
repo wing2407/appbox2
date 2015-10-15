@@ -10,10 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +18,9 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.lidroid.xutils.HttpUtils;
@@ -46,13 +41,8 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
     DBHandler dbHandler = DBHandler.getInstance(getActivity());
 
     public static final int REQUEST_INSTALL = 1;//安装成功标志
-    public static final int REQUEST_ADD_APP = 2;
 
-    /*  public GridFragment(int num, List<AppInfo> data) {
-          //Log.i("ViewPagerFragment", num + "");
-          gridData = data;
-          mNum = num;
-      }*/
+
     public static GridFragment newInstance(int num, List<AppInfo> data) {
 
 
@@ -95,8 +85,6 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
         return v;
     }
 
-    List<AppInfo> saveinstall = new ArrayList<AppInfo>();
-
     /*
     启动的Activity返回时的处理函数，主要是根据requestCode和resultCode进行install成功
     或者失败的信息展示
@@ -108,51 +96,24 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
             if (resultCode == Activity.RESULT_OK) {
                 //安装成功则获取包名,并清除相应缓存
                 AppInfo info = install_list.get(install_list.size() - 1);
-                Toast.makeText(getActivity(), info.getPackageName() + "安装成功，正在启动...!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), info.getName() + "  安装成功，正在启动..", Toast.LENGTH_SHORT).show();
                 install_list.remove(info);
                 //保存到数据库
-
                 dbHandler.saveInstall(info.getPackageName());
 
+                List<AppInfo> saveinstall = new ArrayList<AppInfo>();
                 saveinstall.add(info);
                 dbHandler.saveGridList(saveinstall);
-                saveinstall.remove(info);
 
-                //视图更新
-                //gridData.remove(info);
-                // ((GridViewAdapter) gridView.getAdapter()).notifyDataSetInvalidated();
-                //
-                startActivity(new Intent(getActivity(), MainActivity.class).putExtra("install", "install"));
+
+                startActivity(new Intent(getActivity(), MainActivity.class));
                 startActivity(new Intent(getActivity().getPackageManager().getLaunchIntentForPackage("com.weather.app")));
+                getActivity().finish();
 
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Toast.makeText(getActivity(), "你取消了安装!", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getActivity(), "安装错误!", Toast.LENGTH_SHORT).show();
-            }
-        } else if (requestCode == REQUEST_ADD_APP) {
-            if (resultCode == Activity.RESULT_OK) {
-                //获取addapp返回的数据,并保存到数据库
-                List<AppInfo> list = data.getParcelableArrayListExtra("list");
-                DBHandler dbHandler = DBHandler.getInstance(getActivity());
-
-                String list_info = "";
-                for (AppInfo info : list) {
-                    list_info = list_info + info.getName();
-                }
-                Toast.makeText(getActivity(), "你添加了-->" + list_info, Toast.LENGTH_SHORT).show();
-                // if (dbHandler.saveGridList(list)) {
-                //添加视图(待完成...有bug)
-                // gridData.addAll(list);
-                // ((GridViewAdapter)gridView.getAdapter()).notifyDataSetChanged();
-                // startActivity(new Intent(this, MainActivity.class).putExtra("addapp", "addapp"));
-                //mAdapter.notifyDataSetChanged();
-
-                // }
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(getActivity(), "你取消了添加应用!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getActivity(), "添加过程出现错误!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -165,7 +126,7 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
             if (activeNetInfo != null && activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
                 //wifi环境下载并安装
                 downAndInstall(gridData.get(position), view);
-                Toast.makeText(getActivity(), "广告列表" + gridData.get(position).getPackageName() + "开启下载", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), gridData.get(position).getPackageName() + "开启下载", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getActivity(), "请先连接wifi", Toast.LENGTH_SHORT).show();
             }
@@ -177,7 +138,7 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
         } else {
             //打开已安装应用（对应packageName的应用）
             startActivity(new Intent(getActivity().getPackageManager().getLaunchIntentForPackage(gridData.get(position).getPackageName())));
-            Toast.makeText(getActivity(), gridData.get(position).getPackageName() + "主界面", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), gridData.get(position).getPackageName() + "主界面", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -186,12 +147,12 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if (gridData.get(position).isAD()) {
             //不做操作
-            Toast.makeText(getActivity(), "广告列表长按不做操作", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), "广告列表长按不做操作", Toast.LENGTH_SHORT).show();
         } else if (gridData.get(position).getPackageName().equals("add")) {
             //添加图标。。。不做操作，且不出现delete按钮
         } else {
             //进入删除模式
-            Toast.makeText(getActivity(), "长按" + gridData.get(position).getPackageName() + "删除模式", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), "长按删除模式", Toast.LENGTH_SHORT).show();
             deleteMode();
         }
         return true;
@@ -275,17 +236,12 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
                 deleteBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.i("GridFragment", (int) v.getTag() + "");
-
+                        //Log.i("GridFragment", (int) v.getTag() + "");
                         ((View) v.getParent()).setVisibility(View.INVISIBLE);
-
                         dbHandler.deleteGridList(gridData.get((int) v.getTag()));
-                        gridData.remove(gridData.get((int) v.getTag()));
+
                     }
                 });
-            } else {
-                // gridData.remove(info);
-
             }
         }
     }

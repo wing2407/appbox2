@@ -22,17 +22,12 @@
             android:gravity="center_horizontal"
             android:orientation="horizontal"/>
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center">
-
             <android.support.v4.view.ViewPager
                 android:id="@+id/viewpager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                />
-        </FrameLayout>
+                android:layout_gravity="center" />
+
     </RelativeLayout>
 
     <LinearLayout
@@ -90,7 +85,7 @@
                 android:id="@+id/ad_viewpager"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"></android.support.v4.view.ViewPager>
+                android:layout_gravity="center"/>
 
             <TextView
                 android:id="@+id/noAppTitle"

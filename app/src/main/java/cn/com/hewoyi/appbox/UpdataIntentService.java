@@ -37,7 +37,7 @@ public class UpdataIntentService extends IntentService {
             //这里的response.body().string()似乎只能使用一次，第二次会出现问题
             String responseText = response.body().string();
             //如果接口没有任何数据文本，则不操作，以免报错，注意前面的！号
-            if (!responseText.equals("")) {
+            if (!responseText.isEmpty()) {
                 JSONObject jsonObject = JSON.parseObject(responseText);
                 //Log.i("MainActivity", "response-->" + jsonObject.toString());
 
@@ -87,7 +87,6 @@ public class UpdataIntentService extends IntentService {
                     //解析得到list存入数据库
                     DBHandler handlerDB = DBHandler.getInstance(getApplicationContext());
                     handlerDB.saveADList(appList);
-                    handlerDB.saveGridList(appList);
                 }
             }
         } catch (IOException e) {

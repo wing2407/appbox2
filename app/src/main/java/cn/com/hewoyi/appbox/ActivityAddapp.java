@@ -153,7 +153,7 @@ public class ActivityAddapp extends AppCompatActivity {
                 //保存list到数据库
                 DBHandler dbHandler = DBHandler.getInstance(getApplicationContext());
                 dbHandler.saveGridList(delete_list);
-                //dbHandler.saveADList(delete_list);
+
 
                 //Intent intent =getIntent();
                // setResult(RESULT_OK,intent);
