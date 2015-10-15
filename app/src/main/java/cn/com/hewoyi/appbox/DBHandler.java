@@ -169,7 +169,8 @@ public class DBHandler {
 
     //插入gridView表的数据
     public synchronized void saveGridList(List<AppInfo> gridList) {
-        if (gridList != null) {
+        //不为空时操作，前面有!号
+        if (!gridList.isEmpty()) {
             db.beginTransaction();//开启事务操作
 
             ContentValues values = new ContentValues();
@@ -186,6 +187,7 @@ public class DBHandler {
 
             db.setTransactionSuccessful();//事务成功
             db.endTransaction();
+
         }
     }
 
@@ -199,7 +201,7 @@ public class DBHandler {
         if (cursor.moveToFirst()) {
             do {
                 AppInfo appInfo = new AppInfo();
-                appInfo.set_id(cursor.getString(cursor.getColumnIndex("app_id")));
+               // appInfo.set_id(cursor.getString(cursor.getColumnIndex("app_id")));
                 appInfo.setName(cursor.getString(cursor.getColumnIndex("name")));
                 appInfo.setPackageName(cursor.getString(cursor.getColumnIndex("packagename")));
                 appInfo.setApp_icon(cursor.getBlob(cursor.getColumnIndex("icon")));

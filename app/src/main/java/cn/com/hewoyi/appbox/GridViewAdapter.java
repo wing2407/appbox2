@@ -3,11 +3,13 @@ package cn.com.hewoyi.appbox;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -19,16 +21,17 @@ import java.util.List;
  */
 public class GridViewAdapter extends BaseAdapter {
     private Context mContext;
-    List<AppInfo> mData;
+    List<AppInfo> gridData;
+
 
     public GridViewAdapter(Context c,List<AppInfo> data) {
         mContext = c;
-        mData =data;
+        gridData =data;
     }
 
     @Override
     public int getCount() {
-        return mData.size();
+        return gridData.size();
     }
 
     public Object getItem(int position) {
@@ -65,8 +68,8 @@ public class GridViewAdapter extends BaseAdapter {
             //imageView = (ImageView) convertView;
         }
 
-        viewHolder.appName_grid_item.setText(mData.get(position).getName()+"");
-        viewHolder.iv_grid_item.setImageBitmap(BitmapFactory.decodeByteArray(mData.get(position).getApp_icon(),0,mData.get(position).getApp_icon().length));
+        viewHolder.appName_grid_item.setText(gridData.get(position).getName()+"");
+        viewHolder.iv_grid_item.setImageBitmap(BitmapFactory.decodeByteArray(gridData.get(position).getApp_icon(),0,gridData.get(position).getApp_icon().length));
         return convertView;
        /* imageView.setImageResource(mThumbIds[position]);
         return imageView;*/
@@ -81,6 +84,7 @@ public class GridViewAdapter extends BaseAdapter {
         Button delete_grid_item;
 
     }
+
 
     /*// references to our images
     private Integer[] mThumbIds = {

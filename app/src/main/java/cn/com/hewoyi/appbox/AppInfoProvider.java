@@ -17,10 +17,11 @@ import java.util.List;
 public class AppInfoProvider {
 
     private PackageManager packageManager;
+    private Context mContext;
     //获取一个包管理器
     public AppInfoProvider(Context context){
         packageManager = context.getPackageManager();
-
+        mContext = context;
     }
     /**
      *获取系统中所有应用信息，
@@ -33,6 +34,8 @@ public class AppInfoProvider {
         AppInfo myAppInfo;
         //获取到所有安装了的应用程序的信息，包括那些卸载了的，但没有清除数据的应用程序
         List<PackageInfo> packageInfos = packageManager.getInstalledPackages(PackageManager.GET_UNINSTALLED_PACKAGES);
+        DBHandler dbHandler = DBHandler.getInstance(mContext.getApplicationContext());
+        List<AppInfo> dblist = dbHandler.loadGridList();
         for(PackageInfo info:packageInfos){
             myAppInfo = new AppInfo();
             //拿到包名
@@ -49,19 +52,29 @@ public class AppInfoProvider {
             myAppInfo.setPackageName(packageName);
             myAppInfo.setName(appName);
             myAppInfo.setApp_icon(bitmapToBytes(drawableToBitmap(icon)));
-
+            myAppInfo.setIsAD(false);
             //打印调试信息
             //Log.d("info", " + " + appName + " : " + packageName + "*");
 
             if(filterApp(appInfo)){
                 //false为非系统应用
                 //myAppInfo.setSystemApp(false);
+                localList.add(myAppInfo);
             }else{
                 //true为系统应用
                 //myAppInfo.setSystemApp(true);
             }
-            localList.add(myAppInfo);
+
+            for (AppInfo in:dblist){
+                if(in.getPackageName().equals(myAppInfo.getPackageName())){
+                    localList.remove(myAppInfo);
+                }
+            }
+
         }
+
+
+
 
         //返回AppInfo泛型列表
         return localList;

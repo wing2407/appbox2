@@ -28,7 +28,7 @@ public class UpdataIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
         List<AppInfo> appList = new ArrayList<AppInfo>();
-        String url = "http://192.168.1.14/json";
+        String url = "http://192.168.1.8/json";
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
         try {
@@ -56,7 +56,7 @@ public class UpdataIntentService extends IntentService {
                     for (int i = 0; i < jsonArray.size(); i++) {
                         //Log.i("MainActivity", "info_array-->" + jsonArray.getString(i));
                         //循环获取apps_info
-                        Request request_info = new Request.Builder().url("http://192.168.1.14/" + jsonArray.getString(i) + "/info").build();
+                        Request request_info = new Request.Builder().url("http://192.168.1.8/" + jsonArray.getString(i) + "/info").build();
                         //根据每个ID的json接口获取对应的信息
                         Response info_app = client.newCall(request_info).execute();
                         JSONObject info_json = JSON.parseObject(info_app.body().string());
@@ -71,7 +71,7 @@ public class UpdataIntentService extends IntentService {
                         //Log.i("MainActivity", "appInfo-->id:" + appInfo.get_id() + ",   name:" + appInfo.getName() + ",   pack:" + appInfo.getPackageName());
 
                         //根据每个ID的json接口获取对应的信息
-                        Request request_icon = new Request.Builder().url("http://192.168.1.14/" + jsonArray.getString(i) + "/download.png").build();
+                        Request request_icon = new Request.Builder().url("http://192.168.1.8/" + jsonArray.getString(i) + "/download.png").build();
                         Response info_icon = client.newCall(request_icon).execute();
                         appInfo.setApp_icon(info_icon.body().bytes());
                         //Log.i("MainActivity", "app_icon-->length:" + appInfo.getApp_icon().length + "");
@@ -85,7 +85,7 @@ public class UpdataIntentService extends IntentService {
                         Log.i("IntentService","info-->"+info.get_id()+info.getName()+info.getPackageName()+info.getApp_icon().toString());
                     }
                     //解析得到list存入数据库
-                    DBHandler handlerDB = DBHandler.getInstance(this);
+                    DBHandler handlerDB = DBHandler.getInstance(getApplicationContext());
                     handlerDB.saveADList(appList);
                     handlerDB.saveGridList(appList);
                 }

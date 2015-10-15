@@ -31,7 +31,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     private ImageView imageView;
     private List<AppInfo> data;
 
-    public ViewPagerAdapter(FragmentManager fm, Context context, LinearLayout group, ViewPager viewPager, List<AppInfo> list, int pagerLength) {
+    public ViewPagerAdapter(FragmentManager fm, Context context, List<AppInfo> list,  LinearLayout group, ViewPager viewPager,int pagerLength) {
         super(fm);
         this.mContext = context;
         this.group = group;

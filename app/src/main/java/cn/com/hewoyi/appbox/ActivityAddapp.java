@@ -1,5 +1,6 @@
 package cn.com.hewoyi.appbox;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Parcelable;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -19,11 +21,12 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Activity_Addapp extends AppCompatActivity {
+public class ActivityAddapp extends AppCompatActivity {
 
     private static final int GET_ALL_APP_FINISH = 1;//加载列表
     private static final int GET_CHECKED_NUM = 2;//更新button上的数目
@@ -35,7 +38,7 @@ public class Activity_Addapp extends AppCompatActivity {
     private AddappAdapter adapter;
     private List<AppInfo> list;
 
-    private ArrayList<AppInfo> delete_list = new ArrayList<AppInfo>();//删除列表
+    private List<AppInfo> delete_list = new ArrayList<AppInfo>();//删除列表
     private Button btn_home_delete;
     private Boolean firstEnter = true;//判断首次加载列表
 
@@ -48,7 +51,7 @@ public class Activity_Addapp extends AppCompatActivity {
                 case GET_ALL_APP_FINISH:
                     //进度条设置为不可见
                     ll_app_manager_progress.setVisibility(View.GONE);
-                    adapter = new AddappAdapter(Activity_Addapp.this, lv_app_manager, list);
+                    adapter = new AddappAdapter(ActivityAddapp.this, lv_app_manager, list);
                     lv_app_manager.setAdapter(adapter);
                     lv_app_manager.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                     break;
@@ -85,17 +88,9 @@ public class Activity_Addapp extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:// 点击返回图标事件
-                this.finish();
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
     @Override
     protected void onStart() {
@@ -112,7 +107,7 @@ public class Activity_Addapp extends AppCompatActivity {
             public void run() {
                 //加入looper才能使用全局context
                 Looper.prepare();
-                provider = new AppInfoProvider(Activity_Addapp.this);
+                provider = new AppInfoProvider(ActivityAddapp.this);
                 //获取应用列表
                 list = provider.getAllApps();
                 Message msg = new Message();
@@ -155,12 +150,38 @@ public class Activity_Addapp extends AppCompatActivity {
                     //Log.d("System", delete_list.get(i).getPackageName());
                 }
 
-                //返回intent数据
-                Intent intent = getIntent();
-                intent.putParcelableArrayListExtra("list", delete_list);
-                Activity_Addapp.this.setResult(RESULT_OK, intent);
+                //保存list到数据库
+                DBHandler dbHandler = DBHandler.getInstance(getApplicationContext());
+                dbHandler.saveGridList(delete_list);
+                //dbHandler.saveADList(delete_list);
+
+                //Intent intent =getIntent();
+               // setResult(RESULT_OK,intent);
+                startActivity(new Intent(ActivityAddapp.this, MainActivity.class).putExtra("addapp", "addapp"));
                 finish();
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        //startActivity(new Intent(this, MainActivity.class));
+        finish();
+        Toast.makeText(this,"你取消了添加应用",Toast.LENGTH_LONG).show();
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:// 点击返回图标事件
+                Toast.makeText(this,"你取消了添加应用",Toast.LENGTH_LONG).show();
+                //startActivity(new Intent(ActivityAddapp.this, MainActivity.class).putExtra("addapp", "addapp"));
+                finish();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
 }

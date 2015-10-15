@@ -1,6 +1,7 @@
 package cn.com.hewoyi.appbox;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.view.Window;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -27,9 +29,12 @@ public class MainActivity extends AppCompatActivity {
 
     ViewPagerAdapter mAdapter;
     ViewPager mPager;
+    LinearLayout group;
 
     ViewPagerAdapter adAdapter;
     ViewPager adPager;
+
+    public boolean DELETE_MODE = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +48,13 @@ public class MainActivity extends AppCompatActivity {
 
         long grid_time = System.currentTimeMillis();
         //访问数据库加载主界面gridVIew数据
-        DBHandler dbHandler = DBHandler.getInstance(this);
+        DBHandler dbHandler = DBHandler.getInstance(getApplicationContext());
         //List<AppInfo> gridList = dbHandler.loadGridList();
         //加入额外的addApp图标
         //gridList.add(new AppInfo("添加应用", "add", "add", bitmapToBytes(BitmapFactory.decodeResource(getResources(), R.drawable.addapp)), false));
-        LinearLayout group = (LinearLayout) findViewById(R.id.viewGroup);
+        group = (LinearLayout) findViewById(R.id.viewGroup);
         //这里传入参数比较多，目的让Activity的操作代码尽量简洁
-        mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), this, group, mPager, dbHandler.loadGridList(), 12);
+        mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), getApplicationContext(),  dbHandler.loadGridList(), group, mPager,12);
         mPager.setAdapter(mAdapter);
         Log.i("MainActivity", "grid_load-->" + (System.currentTimeMillis() - grid_time) + "ms");
 
@@ -69,9 +74,8 @@ public class MainActivity extends AppCompatActivity {
             //加载广告的数据list
             // List<AppInfo> adList = dbHandler.loadADList();
             //这里传入参数比较多，目的让Activity的操作代码尽量简洁
-
             findViewById(R.id.noAppTitle).setVisibility(View.GONE);//隐藏文本
-            adAdapter = new ViewPagerAdapter(getSupportFragmentManager(), this, null, adPager, dbHandler.loadADList(), 4);
+            adAdapter = new ViewPagerAdapter(getSupportFragmentManager(), getApplicationContext(), dbHandler.loadADList(), null, adPager, 4);
             adPager.setAdapter(adAdapter);
 
 
@@ -80,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.nextAppBtn).setOnClickListener(new View.OnClickListener() {
 
-            boolean flag = adPager.isShown() ? adPager.getCurrentItem() != adAdapter.getCount() : true;//滚动判断标志
+            boolean flag = adPager.isShown() ? adPager.getCurrentItem() != adAdapter.getCount() : true;//滚动判断标志,别改成||
 
             @Override
             public void onClick(View v) {
@@ -106,20 +110,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        if (intent.getStringExtra("install")!=null&&intent.getStringExtra("install").equals("install")) {
+        if (intent.getStringExtra("install") != null && intent.getStringExtra("install").equals("install")) {
             adAdapter.notifyDataSetChanged();
-        }else if(intent.getStringExtra("addapp")!=null&&intent.getStringExtra("addapp").equals("addapp")){
-            mAdapter.notifyDataSetChanged();
-            onCreate(null);
+        } else if (intent.getStringExtra("deleteMode") != null && intent.getStringExtra("deleteMode").equals("deleteMode")) {
+            //mAdapter.notifyDataSetChanged();
+            DELETE_MODE=true;
         }
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
 
-    }
 
     @Override
     protected void onResume() {
@@ -131,8 +131,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        if (DELETE_MODE) {
+            //startActivity(new Intent(this,MainActivity.class));
+            //finish();
+            Toast.makeText(this, "delete mode", Toast.LENGTH_LONG).show();
+           //recreate();
+            mAdapter.notifyDataSetChanged();
+            DELETE_MODE = false;
+            return;
+        }
         super.onBackPressed();
-
     }
 
     private static int dip2px(Context context, float dipValue) {

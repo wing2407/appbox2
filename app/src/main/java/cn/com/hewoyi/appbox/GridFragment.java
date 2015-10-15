@@ -45,8 +45,8 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
     GridView gridView;
     DBHandler dbHandler = DBHandler.getInstance(getActivity());
 
-    static final int REQUEST_INSTALL = 1;//安装成功标志
-    static final int REQUEST_ADD_APP = 2;//Activity_addapp的标志
+    public static final int REQUEST_INSTALL = 1;//安装成功标志
+    public static final int REQUEST_ADD_APP = 2;
 
     /*  public GridFragment(int num, List<AppInfo> data) {
           //Log.i("ViewPagerFragment", num + "");
@@ -95,6 +95,8 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
         return v;
     }
 
+    List<AppInfo> saveinstall = new ArrayList<AppInfo>();
+
     /*
     启动的Activity返回时的处理函数，主要是根据requestCode和resultCode进行install成功
     或者失败的信息展示
@@ -112,6 +114,10 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
 
                 dbHandler.saveInstall(info.getPackageName());
 
+                saveinstall.add(info);
+                dbHandler.saveGridList(saveinstall);
+                saveinstall.remove(info);
+
                 //视图更新
                 //gridData.remove(info);
                 // ((GridViewAdapter) gridView.getAdapter()).notifyDataSetInvalidated();
@@ -128,20 +134,21 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
             if (resultCode == Activity.RESULT_OK) {
                 //获取addapp返回的数据,并保存到数据库
                 List<AppInfo> list = data.getParcelableArrayListExtra("list");
-                dbHandler.saveGridList(list);
-
+                DBHandler dbHandler = DBHandler.getInstance(getActivity());
 
                 String list_info = "";
                 for (AppInfo info : list) {
                     list_info = list_info + info.getName();
                 }
                 Toast.makeText(getActivity(), "你添加了-->" + list_info, Toast.LENGTH_SHORT).show();
-
+                // if (dbHandler.saveGridList(list)) {
                 //添加视图(待完成...有bug)
                 // gridData.addAll(list);
                 // ((GridViewAdapter)gridView.getAdapter()).notifyDataSetChanged();
-                startActivity(new Intent(getActivity(), MainActivity.class).putExtra("addapp", "addapp"));
+                // startActivity(new Intent(this, MainActivity.class).putExtra("addapp", "addapp"));
+                //mAdapter.notifyDataSetChanged();
 
+                // }
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Toast.makeText(getActivity(), "你取消了添加应用!", Toast.LENGTH_SHORT).show();
             } else {
@@ -164,8 +171,9 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
             }
 
         } else if (gridData.get(position).getPackageName().equals("add")) {
-            //弹出已安装应用的Acitivity，获取返回数据
-            startActivityForResult(new Intent(getActivity(), Activity_Addapp.class), REQUEST_ADD_APP);
+            //弹出已安装应用的Acitivity(返回数据在ActivityAddapp中的点击事件里，保存到数据库)
+            getActivity().startActivity(new Intent(getActivity(), ActivityAddapp.class));
+            getActivity().finish();
         } else {
             //打开已安装应用（对应packageName的应用）
             startActivity(new Intent(getActivity().getPackageManager().getLaunchIntentForPackage(gridData.get(position).getPackageName())));
@@ -194,7 +202,7 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
     private void downAndInstall(final AppInfo info, View view) {
         HttpUtils httpUtils = new HttpUtils();
         final GridViewAdapter.ViewHolder holder = (GridViewAdapter.ViewHolder) view.getTag();
-        HttpHandler handler = httpUtils.download("http://192.168.1.14/" + info.get_id() + "/download", "/sdcard/Download/" + info.getName() + ".apk",
+        HttpHandler handler = httpUtils.download("http://192.168.1.8/" + info.get_id() + "/download", "/sdcard/Download/" + info.getName() + ".apk",
                 true, // 如果目标文件存在，接着未完成的部分继续下载。服务器不支持RANGE时将从新下载。
                 false, // 如果从请求返回信息中获取到文件名，下载完成后自动重命名。
                 new RequestCallBack<File>() {
@@ -254,6 +262,7 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
     private void deleteMode() {
         View animView;
         Button deleteBtn;
+        ((MainActivity) getActivity()).DELETE_MODE = true;
         for (int i = 0; i < gridView.getChildCount(); i++) {
             animView = gridView.getChildAt(i);
             AppInfo info = gridData.get(i);
@@ -271,10 +280,11 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
                         ((View) v.getParent()).setVisibility(View.INVISIBLE);
 
                         dbHandler.deleteGridList(gridData.get((int) v.getTag()));
+                        gridData.remove(gridData.get((int) v.getTag()));
                     }
                 });
             } else {
-                gridData.remove(info);
+                // gridData.remove(info);
 
             }
         }

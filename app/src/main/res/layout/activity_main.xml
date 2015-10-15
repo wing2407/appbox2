@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bg_activity_main"
     android:orientation="vertical"
     tools:context=".MainActivity">
@@ -11,28 +11,28 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="265dp"
-        android:descendantFocusability="blocksDescendants"
-        >
+        android:descendantFocusability="blocksDescendants">
 
         <LinearLayout
             android:id="@+id/viewGroup"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
             android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            >
-        </LinearLayout>
+            android:orientation="horizontal"/>
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/viewpager"
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            >
-        </android.support.v4.view.ViewPager>
+            android:layout_gravity="center">
 
+            <android.support.v4.view.ViewPager
+                android:id="@+id/viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+        </FrameLayout>
     </RelativeLayout>
 
     <LinearLayout
@@ -40,67 +40,66 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-    <View
-        android:id="@+id/blank"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center|left"
-            android:paddingLeft="10dp"
-            android:text="小编精选"
-            android:textColor="@android:color/black" />
-
-        <Button
-            android:id="@+id/nextAppBtn"
-            android:layout_width="60dp"
-            android:layout_height="20dp"
-            android:gravity="center"
-            android:background="@drawable/bg_activity_main_btn"
-            android:layout_marginRight="5dp"
-            android:text="换一批"
-            android:textSize="14sp"/>
-    </LinearLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp" >
-
-        <!--<GridView
-            android:id="@+id/addMoreGridView"
+        <View
+            android:id="@+id/blank"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_gravity="top"
-            android:fadeScrollbars="true"
-            android:gravity="center|top"
-            android:numColumns="4" >
-        </GridView>-->
+            android:layout_height="1dp"
+            android:background="@android:color/white" />
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/ad_viewpager"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            >
-        </android.support.v4.view.ViewPager>
-
-        <TextView
-            android:id="@+id/noAppTitle"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="恭喜！您的应用已包罗万象！"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
-    </FrameLayout>
+            android:layout_height="30dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center|left"
+                android:paddingLeft="10dp"
+                android:text="小编精选"
+                android:textColor="@android:color/black" />
+
+            <Button
+                android:id="@+id/nextAppBtn"
+                android:layout_width="60dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/bg_activity_main_btn"
+                android:gravity="center"
+                android:text="换一批"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp">
+
+            <!--<GridView
+                android:id="@+id/addMoreGridView"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_gravity="top"
+                android:fadeScrollbars="true"
+                android:gravity="center|top"
+                android:numColumns="4" >
+            </GridView>-->
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/ad_viewpager"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"></android.support.v4.view.ViewPager>
+
+            <TextView
+                android:id="@+id/noAppTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="恭喜！您的应用已包罗万象！"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>
