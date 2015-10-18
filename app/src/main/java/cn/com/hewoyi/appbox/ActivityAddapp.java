@@ -166,8 +166,10 @@ public class ActivityAddapp extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         //startActivity(new Intent(this, MainActivity.class));
+        Toast.makeText(getApplicationContext(),"你取消了添加应用",Toast.LENGTH_LONG).show();
+        startActivity(new Intent(this, MainActivity.class));
         finish();
-        Toast.makeText(this,"你取消了添加应用",Toast.LENGTH_LONG).show();
+
         super.onBackPressed();
     }
 
@@ -175,8 +177,8 @@ public class ActivityAddapp extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:// 点击返回图标事件
-                Toast.makeText(this,"你取消了添加应用",Toast.LENGTH_LONG).show();
-                //startActivity(new Intent(ActivityAddapp.this, MainActivity.class).putExtra("addapp", "addapp"));
+                Toast.makeText(getApplicationContext(),"你取消了添加应用",Toast.LENGTH_LONG).show();
+                startActivity(new Intent(this, MainActivity.class));
                 finish();
             default:
                 return super.onOptionsItemSelected(item);

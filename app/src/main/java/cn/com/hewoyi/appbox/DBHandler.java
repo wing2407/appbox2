@@ -7,6 +7,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -220,6 +224,60 @@ public class DBHandler {
     public synchronized void deleteGridList(AppInfo info) {
             //删除选中的表项
         db.delete("gridlist", "packagename = ?", new String[]{info.getPackageName()});
+    }
+
+    /**
+     * 保存user安装的app信息
+     * @param type
+     * @param Name
+     * @param PackageName
+     */
+    public synchronized void saveIn(int type,String Name,String PackageName){
+        ContentValues values = new ContentValues();
+        values.put("type",type);
+        values.put("name",Name);
+        values.put("packagename",PackageName);
+        values.put("send",false);
+        db.insert("userin", null, values);
+    }
+
+    /**
+     * 加载user的app信息
+     * @return
+     */
+    public synchronized String loadIn(){
+        db.beginTransaction();//开启事务操作
+        Cursor cursor = db.rawQuery("select distinct * from userin where send=0", null);
+
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        if (cursor.moveToFirst()) {
+            do {
+                jsonObject.put("type",cursor.getInt(cursor.getColumnIndex("type")));
+                jsonObject.put("name",cursor.getString(cursor.getColumnIndex("name")));
+                jsonObject.put("packagename",cursor.getString(cursor.getColumnIndex("packagename")));
+                jsonArray.add(jsonObject);
+                jsonObject.clear();
+
+
+            } while (cursor.moveToNext());
+        }else {
+            db.endTransaction();
+            cursor.close();
+            return "";
+        }
+        cursor.close();
+        db.setTransactionSuccessful();//事务成功
+        db.endTransaction();
+        return jsonArray.toString();
+    }
+
+    /**
+     * post数据后则删除
+     */
+    public synchronized void deleteUserIn(){
+        //删除选中的表项
+        db.delete("userin", "send = ?", new String[]{"0"});
     }
 
 }

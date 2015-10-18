@@ -31,6 +31,14 @@ public class DBHelper extends SQLiteOpenHelper {
             "packagename text, " +
             "icon blob)";
 
+    private static final String UserIn = "create table if not exists userin(" +
+            "id integer primary key autoincrement, " +
+            "packagename text, " +
+            "name text, " +
+            "type int," +
+            "send int)";
+
+
     public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
         mContext = context;
@@ -42,6 +50,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.execSQL(GRIDLIST);
         db.execSQL(INSTALLED);
+        db.execSQL(UserIn);
         //Log.i("DBHelper", tableName(date));
 
     }

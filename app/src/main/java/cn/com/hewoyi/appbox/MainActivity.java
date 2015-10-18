@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         group = (LinearLayout) findViewById(R.id.viewGroup);
         adPager = (ViewPager) findViewById(R.id.ad_viewpager);
 
-        startService(new Intent(this,TaskIntentService.class));
 
     }
 
@@ -100,8 +99,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        //从接口拿数据,从应用启动开始就获取，避免Activity的销毁创建而多次启动
-        startService(new Intent(this, UpdataIntentService.class));
+        //确保启动的时候只拿一次广告列表数据
+        if (MyApplication.NeedUpdata) {
+            //从接口拿数据,从应用启动开始就获取，避免Activity的销毁创建而多次启动
+            startService(new Intent(this, UpdataIntentService.class));
+            //启动定时任务
+            startService(new Intent(this, TaskIntentService.class));
+            MyApplication.NeedUpdata = false;
+        }
+
     }
 
     @Override

