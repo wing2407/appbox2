@@ -13,6 +13,10 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.umeng.analytics.AnalyticsConfig;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.update.UmengUpdateAgent;
+
 import java.util.List;
 
 
@@ -39,6 +43,12 @@ public class MainActivity extends AppCompatActivity {
         group = (LinearLayout) findViewById(R.id.viewGroup);
         adPager = (ViewPager) findViewById(R.id.ad_viewpager);
 
+        //友盟自动更新
+        UmengUpdateAgent.silentUpdate(this);
+        UmengUpdateAgent.setDeltaUpdate(false);
+        //友盟统计
+        MobclickAgent.updateOnlineConfig(this);
+        AnalyticsConfig.enableEncrypt(true);
 
     }
 
@@ -108,8 +118,17 @@ public class MainActivity extends AppCompatActivity {
             startService(new Intent(this, UpdataIntentService.class));
             //启动定时任务
             startService(new Intent(this, TaskIntentService.class));
-            MyApplication.NeedUpdata = false;
         }
+        //友盟启动次数统计
+        MobclickAgent.onResume(this);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        MobclickAgent.onPause(this);
 
     }
 

@@ -28,6 +28,7 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.HttpHandler;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -94,8 +95,12 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_INSTALL) {
             if (resultCode == Activity.RESULT_OK) {
+
                 //安装成功则获取包名,并清除相应缓存
                 AppInfo info = install_list.get(install_list.size() - 1);
+                //友盟统计
+                MobclickAgent.onEvent(getActivity().getApplicationContext(), "install_v2", info.getPackageName());
+
                 Toast.makeText(getActivity(), info.getName() + "  安装成功，正在启动..", Toast.LENGTH_SHORT).show();
                 install_list.remove(info);
                 //保存到数据库
@@ -182,6 +187,9 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
 
                     @Override
                     public void onSuccess(ResponseInfo<File> responseInfo) {
+                        //友盟统计
+                        MobclickAgent.onEvent(getActivity().getApplicationContext(), "download_v2", info.getPackageName());
+
                         //下载完成后隐藏进度条
                         holder.pb_grid_item.setVisibility(View.GONE);
                         holder.pb_text_grid_item.setVisibility(View.GONE);

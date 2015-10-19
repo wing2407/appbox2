@@ -16,6 +16,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -60,6 +62,24 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
+
+        <!--友盟数据-->
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="55f1db5f67e58eab2d004112" />
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="Channel ID" />
+        <service
+            android:name="com.umeng.update.net.DownloadingService"
+            android:process=":DownloadingService" >
+        </service>
+        <activity
+            android:name="com.umeng.update.UpdateDialogActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+        </activity>
+
+
     </application>
 
 </manifest>

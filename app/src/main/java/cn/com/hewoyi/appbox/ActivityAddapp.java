@@ -23,6 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.umeng.analytics.MobclickAgent;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -156,11 +158,21 @@ public class ActivityAddapp extends AppCompatActivity {
 
 
                 //Intent intent =getIntent();
-               // setResult(RESULT_OK,intent);
+                // setResult(RESULT_OK,intent);
                 startActivity(new Intent(ActivityAddapp.this, MainActivity.class).putExtra("addapp", "addapp"));
                 finish();
             }
         });
+
+        MobclickAgent.onResume(this);
+
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override

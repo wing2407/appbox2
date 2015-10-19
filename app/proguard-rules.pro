@@ -29,7 +29,7 @@ public static final int *;
 -keep class okio.** {*;}
 -dontwarn  okio.**
 
-
+#fastjson
 -dontwarn android.support.**
 -dontwarn com.alibaba.fastjson.**
 -keep class com.alibaba.fastjson.** { *; }
@@ -38,3 +38,9 @@ public static final int *;
 public <methods>;
 }
 -keepattributes Signature
+
+#友盟
+# 以下类过滤不混淆
+-keep public class * extends com.umeng.**
+# 以下包不进行过滤
+-keep class com.umeng.** { *; }
