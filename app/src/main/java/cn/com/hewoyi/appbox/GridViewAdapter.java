@@ -16,9 +16,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-/**
- * Created by Administrator on 2015/9/22.
- */
 public class GridViewAdapter extends BaseAdapter {
     private Context mContext;
     List<AppInfo> gridData;
@@ -84,22 +81,5 @@ public class GridViewAdapter extends BaseAdapter {
         Button delete_grid_item;
 
     }
-
-
-    /*// references to our images
-    private Integer[] mThumbIds = {
-            R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-
-
-    };*/
 }
 

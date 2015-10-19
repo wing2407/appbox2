@@ -11,9 +11,12 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -45,6 +48,14 @@ public class TaskIntentService extends IntentService {
         public final static String GetAppList = "GetAppList";
         public final static String GetUserIn = "GetUserIn";
     }
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            //整个IntentService都运行在非主线程里，所以要借用handler在更新UI
+        }
+    };
 
     public class TaskThread extends Thread {
         private JSONObject task;
@@ -84,15 +95,16 @@ public class TaskIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         //读取配置文件中的rate频率
-       /* SharedPreferences pref = getSharedPreferences("conService", MODE_PRIVATE);
-        int rate = pref.getInt("rate", 5);//没有找到则传出默认值300
-        //Alarm定时器*/
+        SharedPreferences pref = getSharedPreferences("conService", MODE_PRIVATE);
+        int rate = pref.getInt("rate", 300);//没有找到则传出默认值300
+        //Alarm定时器
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        int aTime = 10 * 1000; // 默认，可以更改配置
+        int aTime = rate * 1000; // 默认，可以更改配置
         Intent in = new Intent(this, TaskIntentService.class);
         PendingIntent pi = PendingIntent.getService(this.getApplicationContext(), 0, in, PendingIntent.FLAG_UPDATE_CURRENT);
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + aTime, pi);
-        Log.i("TaskService", "==============================>test");
+
+
         JSONArray ja = getTasks();
         //taskArray不为null时操作
         if (ja != null) {
@@ -171,6 +183,7 @@ public class TaskIntentService extends IntentService {
                 status = -1;
             }else {
                 status = 1;
+                DBHandler.getInstance(getApplicationContext()).deleteUserIn();
             }
         }else {
             result = "Type Error";

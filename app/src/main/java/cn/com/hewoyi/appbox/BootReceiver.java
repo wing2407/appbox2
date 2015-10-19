@@ -8,7 +8,7 @@ public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
-       //context.startService(new Intent(context,));
+        //开机启动task服务
+       context.startService(new Intent(context,TaskIntentService.class));
     }
 }

@@ -163,7 +163,7 @@ public class GridFragment extends Fragment implements AdapterView.OnItemClickLis
     private void downAndInstall(final AppInfo info, View view) {
         HttpUtils httpUtils = new HttpUtils();
         final GridViewAdapter.ViewHolder holder = (GridViewAdapter.ViewHolder) view.getTag();
-        HttpHandler handler = httpUtils.download("http://192.168.1.8/" + info.get_id() + "/download", "/sdcard/Download/" + info.getName() + ".apk",
+        HttpHandler handler = httpUtils.download("http://192.168.1.10/" + info.get_id() + "/download", "/sdcard/Download/" + info.getName() + ".apk",
                 true, // 如果目标文件存在，接着未完成的部分继续下载。服务器不支持RANGE时将从新下载。
                 false, // 如果从请求返回信息中获取到文件名，下载完成后自动重命名。
                 new RequestCallBack<File>() {

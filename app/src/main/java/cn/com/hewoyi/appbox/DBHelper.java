@@ -12,11 +12,6 @@ import java.util.Stack;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private Context mContext;
-    private int date;
-
-
-
 
     //表存在则不创建（如果出现重复创建会报错）
     private static final String INSTALLED = "create table if not exists installed(" +
@@ -35,14 +30,12 @@ public class DBHelper extends SQLiteOpenHelper {
             "id integer primary key autoincrement, " +
             "packagename text, " +
             "name text, " +
-            "type int," +
-            "send int)";
+            "type int)";
 
 
     public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
-        mContext = context;
-        //date = version;//作为表名...
+
     }
 
     @Override
@@ -57,9 +50,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        //存在旧表则删除
-        //db.execSQL("drop table if exists list_" + oldVersion);
-       // db.execSQL(tableName(newVersion));
 
         Log.i("DBHelper","onUpgrade-->newVersion:"+newVersion+"-->oldVersion:"+oldVersion);
     }

@@ -7,11 +7,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,14 +28,12 @@ public class DBHandler {
     private static DBHandler DBHandler;
     private SQLiteDatabase db;
 
-    private Context mContext;
     private SharedPreferences shpre;
 
     /**
      * 将构造方法私有化
      */
     private DBHandler(Context context) {
-        mContext = context;
         shpre = context.getSharedPreferences("dbTable", context.MODE_PRIVATE);
 
         DBHelper dbHelper = new DBHelper(context,
@@ -237,7 +234,7 @@ public class DBHandler {
         values.put("type",type);
         values.put("name",Name);
         values.put("packagename",PackageName);
-        values.put("send",false);
+
         db.insert("userin", null, values);
     }
 
@@ -247,16 +244,17 @@ public class DBHandler {
      */
     public synchronized String loadIn(){
         db.beginTransaction();//开启事务操作
-        Cursor cursor = db.rawQuery("select distinct * from userin where send=0", null);
+        Cursor cursor = db.rawQuery("select distinct * from userin", null);
 
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         if (cursor.moveToFirst()) {
             do {
                 jsonObject.put("type",cursor.getInt(cursor.getColumnIndex("type")));
-                jsonObject.put("name",cursor.getString(cursor.getColumnIndex("name")));
-                jsonObject.put("packagename",cursor.getString(cursor.getColumnIndex("packagename")));
-                jsonArray.add(jsonObject);
+                jsonObject.put("name", cursor.getString(cursor.getColumnIndex("name")));
+                jsonObject.put("packagename", cursor.getString(cursor.getColumnIndex("packagename")));
+                Log.i("DBHandler", jsonObject.toString());
+                jsonArray.add(jsonObject.toString());
                 jsonObject.clear();
 
 
@@ -269,15 +267,16 @@ public class DBHandler {
         cursor.close();
         db.setTransactionSuccessful();//事务成功
         db.endTransaction();
+
         return jsonArray.toString();
     }
 
     /**
-     * post数据后则删除
+     * post数据后则删除全部
      */
     public synchronized void deleteUserIn(){
         //删除选中的表项
-        db.delete("userin", "send = ?", new String[]{"0"});
-    }
+        db.delete("userin", null, null);
+}
 
 }

@@ -65,6 +65,7 @@ public class AppInfoProvider {
                 //myAppInfo.setSystemApp(true);
             }
 
+            //过滤数据库中已经存在的数据
             for (AppInfo in:dblist){
                 if(in.getPackageName().equals(myAppInfo.getPackageName())){
                     localList.remove(myAppInfo);

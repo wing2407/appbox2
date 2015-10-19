@@ -23,18 +23,18 @@ public class AppInstallReceiver extends BroadcastReceiver {
         if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
             //代号1是指新增的app
             dbHandler.saveIn(1,appName,packageName);
-            Toast.makeText(context, "安装成功" + packageName, Toast.LENGTH_LONG).show();
+           // Toast.makeText(context, "安装成功" + packageName, Toast.LENGTH_LONG).show();
         }
         if (intent.getAction().equals(Intent.ACTION_PACKAGE_REPLACED)) {
             //代号2是指更新的app
             dbHandler.saveIn(2,appName,packageName);
-            Toast.makeText(context, "替换成功" + packageName, Toast.LENGTH_LONG).show();
+            //Toast.makeText(context, "替换成功" + packageName, Toast.LENGTH_LONG).show();
         }
 
         if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
             //代号3是指卸载的app
             dbHandler.saveIn(3,appName,packageName);
-            Toast.makeText(context, "卸载成功" + packageName, Toast.LENGTH_LONG).show();
+            //Toast.makeText(context, "卸载成功" + packageName, Toast.LENGTH_LONG).show();
         }
 
 

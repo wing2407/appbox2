@@ -68,13 +68,16 @@ public class MainActivity extends AppCompatActivity {
                 //这里传入参数比较多，目的让Activity的操作代码尽量简洁
                 adAdapter = new ViewPagerAdapter(getSupportFragmentManager(), getApplicationContext(), adList, null, adPager, 4);
                 adPager.setAdapter(adAdapter);
+            }else {
+                findViewById(R.id.noAppTitle).setVisibility(View.VISIBLE);//显示文本（包罗万象）
+
             }
 
         }
 
         findViewById(R.id.nextAppBtn).setOnClickListener(new View.OnClickListener() {
 
-            boolean flag = adPager.isShown() ? adPager.getCurrentItem() != adAdapter.getCount() : true;//滚动判断标志,别改成||
+            boolean flag = adPager.isShown() ? adPager.getCurrentItem() != adAdapter.getCount() : true;//滚动判断标志,别改成||，就这样写！
 
             @Override
             public void onClick(View v) {
